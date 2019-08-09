@@ -57,11 +57,13 @@ class Megadoot(commands.Cog):
 
     @commands.command()
     async def fight(self, ctx, user: discord.Member):
+        """fight someone to show them how strong you are!"""
         await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name))
 
 
     @commands.command()
     async def hug(self, ctx, user: discord.Member):
+        """hug someone to show them how much you love them!"""
         await ctx.send(random.choice(self.hugs).format(ctx.author.name, user.name))
 
         
