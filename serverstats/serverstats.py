@@ -41,7 +41,7 @@ class ServerStats(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def channelcount(self, ctx):
+    async def ccount(self, ctx):
         """Sets up the Channel Count Voice Channel"""
 
         message = await self.create_channel(ctx, "Channel Count", len([c for c in channel.guild.channels if isinstance(c, discord.TextChannel)]))
