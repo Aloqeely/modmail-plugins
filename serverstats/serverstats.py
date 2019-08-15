@@ -95,7 +95,7 @@ class ServerStats(commands.Cog):
         if channel.category != category:
             return
         
-        await channel.edit(name=f"{name}: {count}")
+        await voicechannel.edit(name=f"{name}: {count}")
 
     
 def setup(bot):
