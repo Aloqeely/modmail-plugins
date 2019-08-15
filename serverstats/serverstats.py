@@ -28,7 +28,7 @@ class ServerStats(commands.Cog):
     async def membercount(self, ctx):
         """Sets up the Member Count Voice Channel."""
 
-        message = await self.create_channel(ctx, "Member Count", ctx.guild.member_count)
+        message = await self.create_channel(ctx, "Member Count", ctx.guild.member_count))
         await ctx.send(message)
 
     @commands.command()
