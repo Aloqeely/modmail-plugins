@@ -44,7 +44,7 @@ class ServerStats(commands.Cog):
     async def channelcount(self, ctx):
         """Sets up the Channel Count Voice Channel"""
 
-        message = await self.create_channel(ctx, "Channel Count", len(guild.text_channels)
+        message = await self.create_channel(ctx, "Channel Count", len(guild.text_channels))
         await ctx.send(message)
 
 
