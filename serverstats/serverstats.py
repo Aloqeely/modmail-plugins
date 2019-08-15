@@ -45,7 +45,7 @@ class ServerStats(commands.Cog):
         """Sets up the Channel Count Voice Channel"""
 
         message = await self.create_channel(ctx, "Channel Count", len(guild.text_channels))
-        await ctx.send("test")
+        await ctx.send('test')
 
 
     @commands.Cog.listener()
