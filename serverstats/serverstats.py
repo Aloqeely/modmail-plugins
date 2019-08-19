@@ -59,11 +59,11 @@ class ServerStats(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
-        await self.update_channel(channel, "Channel Count", len(ctx.guild.channels))
+        await self.update_channel(channel, "Channel Count", len(channel.guild.channels))
 
     @commands.Cog.listener()
-    async def on_guild_channel_delete(self):
-        await self.update_channel(channel, "Channel Count", len(ctx.guild.channels))
+    async def on_guild_channel_delete(self, channel):
+        await self.update_channel(channel, "Channel Count", len(channel.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
