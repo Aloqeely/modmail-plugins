@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 
+from code import checks
+from core.models import PermissionLevel
+
 class ServerStats(commands.Cog): 
     """Interesting and accurate statistics about your server."""
     
@@ -9,6 +12,7 @@ class ServerStats(commands.Cog):
         self.c_name = "📊 | Server Info"
 
     @commands.command() 
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def vcsetup(self, ctx):
         """Sets up all the server stats Voice Channels."""
 
@@ -20,6 +24,7 @@ class ServerStats(commands.Cog):
             await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
 
     @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def membercount(self, ctx):
         """Sets up the Member Count Voice Channel."""
 
@@ -27,6 +32,7 @@ class ServerStats(commands.Cog):
         await ctx.send(message)
 
     @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rolecount(self, ctx):
         """Sets up the Role Count Voice Channel."""
 
@@ -34,6 +40,7 @@ class ServerStats(commands.Cog):
         await ctx.send(message)
 
     @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def channelcount(self, ctx):
         """Sets up the Channel Count Voice Channel"""
 
