@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 
-from core import checks
-from core.models import PermissionLevel
-
 class ServerStats(commands.Cog): 
     """Interesting and accurate statistics about your server."""
     
@@ -12,7 +9,6 @@ class ServerStats(commands.Cog):
         self.c_name = "📊 | Server Info"
 
     @commands.command() 
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def vcsetup(self, ctx):
         """Sets up all the server stats Voice Channels."""
 
@@ -21,18 +17,16 @@ class ServerStats(commands.Cog):
 
             await self.create_channel(ctx, "Member Count", ctx.guild.member_count)
             await self.create_channel(ctx, "Role Count", len(ctx.guild.roles))
-            await self.create_channel(ctx, "Channel Count", len([c for c in channel.guild.channels if isinstance(c, discord.TextChannel)]))
+            await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
 
     @commands.command()
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def membercount(self, ctx):
         """Sets up the Member Count Voice Channel."""
 
-        message = await self.create_channel(ctx, "Member Count", ctx.guild.member_count))
+        message = await self.create_channel(ctx, "Member Count", ctx.guild.member_count)
         await ctx.send(message)
 
     @commands.command()
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rolecount(self, ctx):
         """Sets up the Role Count Voice Channel."""
 
@@ -40,12 +34,11 @@ class ServerStats(commands.Cog):
         await ctx.send(message)
 
     @commands.command()
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def channelcount(self, ctx):
         """Sets up the Channel Count Voice Channel"""
 
-        message = await self.create_channel(ctx, "Channel Count", len(guild.text_channels))
-        await ctx.send('test')
+        message = await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
+        await ctx.send(message)
 
 
     @commands.Cog.listener()
@@ -66,11 +59,11 @@ class ServerStats(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
-        await self.update_channel(channel, "Channel Count", len([c for c in channel.guild.channels if isinstance(c, discord.TextChannel)]))
+        await self.update_channel(channel, "Channel Count", len(ctx.guild.channels))
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self):
-        await self.update_channel(channel, "Channel Count", len([c for c in channel.guild.channels if isinstance(c, discord.TextChannel)]))
+        await self.update_channel(channel, "Channel Count", len(ctx.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
@@ -95,8 +88,8 @@ class ServerStats(commands.Cog):
         if channel.category != category:
             return
         
-        await voicechannel.edit(name=f"{name}: {count}")
+        await channel.edit(name=f"{name}: {count}")
 
-    
+
 def setup(bot):
     bot.add_cog(ServerStats(bot))
