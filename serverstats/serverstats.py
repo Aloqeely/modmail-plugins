@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from code import checks
+from core import checks
 from core.models import PermissionLevel
 
 class ServerStats(commands.Cog): 
