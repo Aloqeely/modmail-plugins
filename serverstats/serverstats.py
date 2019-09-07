@@ -30,7 +30,7 @@ class ServerStats(commands.Cog):
             
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def membercount(self, ctx, mname: str=None):
+    async def membercount(self, ctx, *, mname: str = None):
         """Sets up the Member Count Voice Channel."""
 
         if mname is None:
@@ -43,7 +43,7 @@ class ServerStats(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rolecount(self, ctx, rname):
+    async def rolecount(self, ctx, *, rname: str=None):
         """Sets up the Role Count Voice Channel.""" 
 
         if rname is None:
@@ -56,7 +56,7 @@ class ServerStats(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def channelcount(self, ctx, cname):
+    async def channelcount(self, ctx, *, cname: str=None):
         """Sets up the Channel Count Voice Channel"""
 
         if cname is None:
