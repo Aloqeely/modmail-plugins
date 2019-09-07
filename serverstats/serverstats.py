@@ -10,7 +10,8 @@ class ServerStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.c_name = "📊 | Server Info"
-
+        self.db = bot.plugin_db.get_partition(self)
+        
     @commands.command() 
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def vcsetup(self, ctx):
@@ -23,54 +24,84 @@ class ServerStats(commands.Cog):
             await self.create_channel(ctx, "Role Count", len(ctx.guild.roles))
             await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
 
+            self.db.find_one_and_update({"_id": "config"}, {"$set": {"mChannel": "Member Count"}}, upsert=True)
+            self.db.find_one_and_update({"_id": "config"}, {"$set": {"rChannel": "Role Count"}}, upsert=True)
+            self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": "Channel Count"}}, upsert=True)
+            
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def membercount(self, ctx):
+    async def membercount(self, ctx, mname: str=None):
         """Sets up the Member Count Voice Channel."""
 
-        message = await self.create_channel(ctx, "Member Count", ctx.guild.member_count)
+        if mname is None:
+            mname = "Member Count"
+
+        message = await self.create_channel(ctx, mname, ctx.guild.member_count)
         await ctx.send(message)
+
+        self.db.find_one_and_update({"_id": "config"}, {"$set": {"mChannel": mname}}, upsert=True)
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rolecount(self, ctx):
-        """Sets up the Role Count Voice Channel."""
+    async def rolecount(self, ctx, rname):
+        """Sets up the Role Count Voice Channel.""" 
 
-        message = await self.create_channel(ctx, "Role Count", len(ctx.guild.roles))
+        if rname is None:
+            rname = "Role Count"
+
+        message = await self.create_channel(ctx, rname, len(ctx.guild.roles))
         await ctx.send(message)
+
+        self.db.find_one_and_update({"_id": "config"}, {"$set": {"rChannel": "Role Count"}}, upsert=True)
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def channelcount(self, ctx):
+    async def channelcount(self, ctx, cname):
         """Sets up the Channel Count Voice Channel"""
 
-        message = await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
+        if cname is None:
+            cname = "Channel Count"
+
+        message = await self.create_channel(ctx, cname, len(ctx.guild.channels))
         await ctx.send(message)
 
+        self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": "Channel Count"}}, upsert=True)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        await self.update_channel(member, "Member Count", member.guild.member_count)  
+        voice_channels = await self.db.find_one({"_id": "config"})
+        member_vc = voice_channels["mChannel"]
+        await self.update_channel(member, member_vc, member.guild.member_count)  
         
     @commands.Cog.listener()   
     async def on_member_remove(self, member):
-        await self.update_channel(member, "Member Count", member.guild.member_count)  
+        voice_channels = await self.db.find_one({"_id": "config"})
+        member_vc = voice_channels["mChannel"]
+        await self.update_channel(member, member_vc, member.guild.member_count)  
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
-        await self.update_channel(role, "Role Count", len(role.guild.roles))
+        voice_channels = await self.db.find_one({"_id": "config"})
+        role_vc = voice_channels["rChannel"]
+        await self.update_channel(role, role_vc, len(role.guild.roles))
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
-        await self.update_channel(role, "Role Count", len(role.guild.roles))
+        voice_channels = await self.db.find_one({"_id": "config"})
+        role_vc = voice_channels["rChannel"]
+        await self.update_channel(role, role_vc, len(role.guild.roles))
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
-        await self.update_channel(channel, "Channel Count", len(channel.guild.channels))
+        voice_channels = await self.db.find_one({"_id": "config"})
+        channel_vc = voice_channels["cChannel"]
+        await self.update_channel(channel, channel_vc, len(guild.channels))
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
-        await self.update_channel(channel, "Channel Count", len(channel.guild.channels))
+        voice_channels = await self.db.find_one({"_id": "config"})
+        channel_vc = voice_channels["cChannel"]
+        await self.update_channel(channel, channel_vc, len(guild.channels))
     
     async def create_channel(self, ctx, name, count): 
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
