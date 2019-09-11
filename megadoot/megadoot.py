@@ -60,8 +60,7 @@ class Megadoot(commands.Cog):
     @commands.command()
     async def fight(self, ctx, user: discord.Member):
         """fight someone to show them how strong you are!"""
-        self.guild = discord.utils.get(message.guild.name)
-        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, self.guild.owner.name))
+        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, ctx.guild.owner.name))
 
 
     @commands.command()
