@@ -115,7 +115,7 @@ class ServerStats(commands.Cog):
         if channel_vc is None:
             return
         
-        await self.update_channel(channel, channel_vc, len(guild.channels))
+        await self.update_channel(channel, channel_vc, len(channel.guild.channels))
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
@@ -125,7 +125,7 @@ class ServerStats(commands.Cog):
         if channel_vc is None:
             return
         
-        await self.update_channel(channel, channel_vc, len(guild.channels))
+        await self.update_channel(channel, channel_vc, len(channel.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
