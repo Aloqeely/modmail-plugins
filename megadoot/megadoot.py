@@ -11,7 +11,7 @@ class Megadoot(commands.Cog):
             '{0} tried to throw a snowball at {1} but it hits Dabbit\'s car, and Dabbit is not pleased!',
             '{0} tackled {1} down with a fish.',
             '{0} fought {1}, but it was not effective...',
-            '{0} tried to throw a bucket of water at {1}, but accidentally threw it all over the server owner!',
+            '{0} tried to throw a bucket of water at {1}, but accidentally threw it all over {2}!',
             '{0} got tired of ks’ puns and tried to fight but accidentally hit {1}',
             '{0} tried to hit {1}, but {1} had a reverse card up their sleeve so {0} got hit instead',
             '{0} tried to fight {1}, but ended up being given cereal soup by Dabbit.',
@@ -58,7 +58,7 @@ class Megadoot(commands.Cog):
     @commands.command()
     async def fight(self, ctx, user: discord.Member):
         """fight someone to show them how strong you are!"""
-        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name))
+        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, guild.owner.name))
 
 
     @commands.command()
