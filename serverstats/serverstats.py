@@ -71,36 +71,60 @@ class ServerStats(commands.Cog):
     async def on_member_join(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
         member_vc = voice_channels["mChannel"]
+
+        if member_vc is None:
+            return
+
         await self.update_channel(member, member_vc, member.guild.member_count)  
         
     @commands.Cog.listener()   
     async def on_member_remove(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
         member_vc = voice_channels["mChannel"]
+        
+        if member_vc is None:
+            return
+        
         await self.update_channel(member, member_vc, member.guild.member_count)  
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
         voice_channels = await self.db.find_one({"_id": "config"})
         role_vc = voice_channels["rChannel"]
+        
+        if role_vc is None:
+            return
+        
         await self.update_channel(role, role_vc, len(role.guild.roles))
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
         voice_channels = await self.db.find_one({"_id": "config"})
         role_vc = voice_channels["rChannel"]
+        
+        if role_vc is None:
+            return
+        
         await self.update_channel(role, role_vc, len(role.guild.roles))
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
         voice_channels = await self.db.find_one({"_id": "config"})
         channel_vc = voice_channels["cChannel"]
+        
+        if channel_vc is None:
+            return
+        
         await self.update_channel(channel, channel_vc, len(guild.channels))
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
         voice_channels = await self.db.find_one({"_id": "config"})
         channel_vc = voice_channels["cChannel"]
+        
+        if channel_vc is None:
+            return
+        
         await self.update_channel(channel, channel_vc, len(guild.channels))
     
     async def create_channel(self, ctx, name, count): 
