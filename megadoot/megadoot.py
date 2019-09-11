@@ -7,6 +7,7 @@ from discord.ext import commands
 class Megadoot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.guild = discord.utils.get(message.guild.name)
         self.fights = [
             '{0} tried to throw a snowball at {1} but it hits Dabbit\'s car, and Dabbit is not pleased!',
             '{0} tackled {1} down with a fish.',
@@ -55,10 +56,12 @@ class Megadoot(commands.Cog):
             '{1} is confused if cereal is soup or salad, so {0} hugged {1} to calm them down'
         ]
 
+     
+            
     @commands.command()
     async def fight(self, ctx, user: discord.Member):
         """fight someone to show them how strong you are!"""
-        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, guild.owner.name))
+        await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, self.guild.owner.name))
 
 
     @commands.command()
