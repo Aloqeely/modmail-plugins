@@ -40,3 +40,6 @@ class Report(commands.Cog):
         embed.add_field(
                 name="Reason", value=reason,inline=False)
         await report_channel.send(embed=embed)
+                         
+def setup(bot):
+    bot.add_cog(Report(bot))
