@@ -24,10 +24,6 @@ class Report(commands.Cog):
     @commands.command()
     async def report(self, ctx, user: discord.Member, *, reason):
         """Report a user"""
-        config = await self.db.find_one({"_id": "config"})
-        report_channel = config["report_channel"]
-        setchannel = discord.utils.get(ctx.guild.channels, name=report_channel)
-        defaultchannel = discord.utils.get(ctx.guild.channels, name="reports")
         embed = discord.Embed(
                     color=discord.Color.red())
         embed.set_author(name=f"{ctx.author.name}",icon_url=ctx.author.avatar_url)
@@ -40,12 +36,15 @@ class Report(commands.Cog):
                 name="Channel", value=f"{ctx.channel.mention}",inline=False)
         embed.add_field(
                 name="Reason", value=reason,inline=False)
-        try:
-            await setchannel.send(embed=embed)
-            await ctx.send("Succesfully Reported the User!")
-        except:
-            await defaultchannel.send(embed=embed)
-            await ctx.send("Succesfully Reported the User!")
                          
+        config = await self.db.find_one({"_id": "config"})
+        report_channel = config["report_channel"]
+        if report_channel is not None:
+            setchannel = discord.utils.get(ctx.guild.channels, name=report_channel)
+        else:
+            setchannel = discord.utils.get(ctx.guild.channels, name="reports")
+        await setchannel.send(embed=embed)
+        await ctx.send("Succesfully Reported the User!")
+                        
 def setup(bot):
     bot.add_cog(Report(bot))
