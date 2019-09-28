@@ -13,7 +13,8 @@ class Report(commands.Cog):
         self.db = bot.plugin_db.get_partition(self)
 
     @commands.command()
-    async def reportchannel(ctx, channel: discord.TextChannel):
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def reportchannel(self, ctx, channel: discord.TextChannel):
         """Set the Reports Channel"""
         await self.db.find_one_and_update(
                 {"_id": "report-config"}, {"$set": {"report_channel": channel}}
@@ -21,7 +22,7 @@ class Report(commands.Cog):
         await ctx.send("Successfully set the Reports channel!")
 
     @commands.command()
-    async def report(ctx, user: discord.Member, *, reason):
+    async def report(self, ctx, user: discord.Member, *, reason):
         """Report a user"""
         config = await self.db.find_one({"_id": "report-config"})
         report_channel = config["report_channel"]
