@@ -1,4 +1,5 @@
 import datetime
+
 import discord
 from discord.ext import commands
 
@@ -21,17 +22,17 @@ class Report(commands.Cog):
         if config is None:
             await self.db.insert_one({"_id": "config"})
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {"report_channel": channel.name}}
+                {"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True
             )
         await ctx.send("Successfully set the Reports channel!")
 
     @commands.command()
     async def report(self, ctx, user: discord.Member, *, reason):
-        """Report a user"""
+        """Report member's bad behavior"""
         config = await self.db.find_one({"_id": "config"})
         report_channel = config["report_channel"]
         if report_channel is not None:
-            setchannel = discord.utils.get(ctx.guild.channels, name=report_channel)
+            setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
         else:
             setchannel = discord.utils.get(ctx.guild.channels, name="reports")
         embed = discord.Embed(
