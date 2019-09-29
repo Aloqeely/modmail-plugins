@@ -17,10 +17,6 @@ class Report(commands.Cog):
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def reportchannel(self, ctx, channel: discord.TextChannel):
         """Set the Reports Channel"""
-        config = await self.db.find_one({"_id": "config"})
-
-        if config is None:
-            await self.db.insert_one({"_id": "config"})
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True
             )
@@ -34,7 +30,8 @@ class Report(commands.Cog):
         if report_channel is not None:
             setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
         else:
-            setchannel = discord.utils.get(ctx.guild.channels, name="reports")
+            await ctx.send("No Reports Channel set up, Make sure to set one first!")
+            return
         embed = discord.Embed(
                     color=discord.Color.red())
         embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)
