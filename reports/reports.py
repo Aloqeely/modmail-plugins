@@ -31,7 +31,13 @@ class Report(commands.Cog):
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_mention": mention}}, upsert=True
             )
-        await ctx.send(f"Successfully Changed the Report Mention to `{mention}`")
+        embed = discord.Embed(
+                color=Color.blue())
+        embed.timestamp = datetime.datetime.utcnow()
+        embed.add_field(
+            name="Changed Mention", value=f"Successfully Changed the Report Mention to {mention}",inline=False
+        )
+        await ctx.send(embed=embed)
         
 
 
@@ -45,7 +51,7 @@ class Report(commands.Cog):
 
         embed = discord.Embed(
                     color=discord.Color.red())
-        embed.timestamp = datetime.datetime.now()
+        embed.timestamp = datetime.datetime.utcnow()
         embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)
         embed.add_field(
                 name="Reported User", value=f"{user.mention} | ID: {user.id}",inline=False)
