@@ -22,7 +22,7 @@ class Report(commands.Cog):
             )
         await ctx.send("Successfully set the Reports channel!")
 
-    @comamnds.command(aliases=["rmention"])
+    @commands.command(aliases=["rmention"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def reportmention(self, ctx, *, mention: str):
         await self.db.find_one_and_update(
