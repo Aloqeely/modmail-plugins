@@ -20,6 +20,9 @@ class Report(commands.Cog):
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True
             )
+        await self.db.find_one_and_update(
+                {"_id": "config"}, {"$set": {"report_mention": "New Report!"}}, upsert=True
+            )
         await ctx.send("Successfully set the Reports channel!")
 
     @commands.command(aliases=["rmention"])
@@ -53,8 +56,7 @@ class Report(commands.Cog):
         embed.add_field(
                 name="Reason", value=reason,inline=False)
 
-        if report_mention is not None:
-            await setchannel.send(report_mention)
+        await setchannel.send(report_mention)
         await setchannel.send(embed=embed)
         await ctx.send("Succesfully Reported the User!")
                         
