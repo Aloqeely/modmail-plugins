@@ -13,28 +13,45 @@ class Report(commands.Cog):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
 
-    @commands.command()
+    @commands.command(aliases=["rchannel"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def reportchannel(self, ctx, channel: discord.TextChannel):
         """Set the Reports Channel"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True
             )
+        await self.db.find_one_and_update(
+                {"_id": "config"}, {"$set": {"report_mention": "New Report!"}}, upsert=True
+            )
         await ctx.send("Successfully set the Reports channel!")
+
+    @commands.command(aliases=["rmention"])
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def reportmention(self, ctx, *, mention: str):
+        await self.db.find_one_and_update(
+                {"_id": "config"}, {"$set": {"report_mention": mention}}, upsert=True
+            )
+        embed = discord.Embed(
+                color=discord.Color.blue())
+        embed.timestamp = datetime.datetime.utcnow()
+        embed.add_field(
+            name="Changed Mention", value=f"Successfully Changed the Report Mention to {mention}",inline=False
+        )
+        await ctx.send(embed=embed)
+        
+
 
     @commands.command()
     async def report(self, ctx, user: discord.Member, *, reason):
         """Report member's bad behavior"""
         config = await self.db.find_one({"_id": "config"})
         report_channel = config["report_channel"]
-        if report_channel is not None:
-            setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
-        else:
-            await ctx.send("No Reports Channel set up, Make sure to set one first!")
-            return
+        report_mention = config["report_mention"]
+        setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
+
         embed = discord.Embed(
                     color=discord.Color.red())
-        embed.timestamp = datetime.datetime.now()
+        embed.timestamp = datetime.datetime.utcnow()
         embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)
         embed.add_field(
                 name="Reported User", value=f"{user.mention} | ID: {user.id}",inline=False)
@@ -45,6 +62,7 @@ class Report(commands.Cog):
         embed.add_field(
                 name="Reason", value=reason,inline=False)
 
+        await setchannel.send(report_mention)
         await setchannel.send(embed=embed)
         await ctx.send("Succesfully Reported the User!")
                         
