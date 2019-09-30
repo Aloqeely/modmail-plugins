@@ -34,8 +34,8 @@ class Report(commands.Cog):
             return
         embed = discord.Embed(
                     color=discord.Color.red())
+        embed.timestamp = datetime.datetime.now()
         embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)
-        embed.set_footer(text=datetime.datetime.today().strftime('%A %b %d | %I:%M %p'))
         embed.add_field(
                 name="Reported User", value=f"{user.mention} | ID: {user.id}",inline=False)
         embed.add_field(
