@@ -32,7 +32,7 @@ class Report(commands.Cog):
                 {"_id": "config"}, {"$set": {"report_mention": mention}}, upsert=True
             )
         embed = discord.Embed(
-                color=Color.blue())
+                color=discord.Color.blue())
         embed.timestamp = datetime.datetime.utcnow()
         embed.add_field(
             name="Changed Mention", value=f"Successfully Changed the Report Mention to {mention}",inline=False
