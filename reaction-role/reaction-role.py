@@ -42,7 +42,7 @@ class ReactionRoles(commands.Cog):
         msg_id = config["rr_msg"]
         if payload.message_id == int(msg_id):
             guild = discord.utils.get(self.bot.guilds, id=payload.guild_id)
-            rrole = config[payload.emoji.id]
+            rrole = config[payload.emoji.name]
             role = discord.utils.get(guild.roles, id=rrole)
 
             if role is not None:
