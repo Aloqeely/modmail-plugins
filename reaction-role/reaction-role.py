@@ -13,7 +13,8 @@ class ReactionRoles(commands.Cog):
 
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, role: discord.Role, message_id: int, emoji: discord.Emoji):
+    async def reactionrole(self, ctx, message_id: int, role: discord.Role, emoji: discord.Emoji):
+        """Sets Up the Reaction Role"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {emoji.id: role.id}}, upsert=True
             )
