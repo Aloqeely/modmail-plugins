@@ -16,7 +16,7 @@ class ReactionRoles(commands.Cog):
     async def reactionrole(self, ctx, message_id, role: discord.Role, emoji: discord.Emoji):
         """Sets Up the Reaction Role"""
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {emoji.id: role.id}}, upsert=True
+                {"_id": "config"}, {"$set": {emoji.name: role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"rr_msg": message_id}}, upsert=True
@@ -29,7 +29,7 @@ class ReactionRoles(commands.Cog):
         msg_id = config["rr_msg"]
         if payload.message_id == msg_id:
             guild = discord.utils.get(bot.guilds, id=payload.guild_id)
-            rrole = config[payload.emoji.id]
+            rrole = config[payload.emoji.name]
             role = discord.utils.get(guild.roles, id=int(rrole))
 
             if role is not None:
