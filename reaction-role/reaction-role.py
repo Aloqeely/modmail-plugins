@@ -27,7 +27,7 @@ class ReactionRoles(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
         msg_id = config["rr_msg"]
-        if payload.message_id == msg_id:
+        if payload.message_id == payload.message_id:
             guild = discord.utils.get(bot.guilds, id=payload.guild_id)
             rrole = config[payload.emoji.name]
             role = discord.utils.get(guild.roles, id=int(rrole))
