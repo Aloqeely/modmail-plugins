@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-rom core import checks
+from core import checks
 from core.models import PermissionLevel
 
 class ReactionRoles(commands.Cog):
