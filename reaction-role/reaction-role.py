@@ -21,6 +21,12 @@ class ReactionRoles(commands.Cog):
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"rr_msg": message_id}}, upsert=True
             )            
+        for channel in ctx.guild.text_channels:
+            try:
+                msg = await channel.fetch_message(message_id)
+            except:
+                continue
+        await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
 
     @commands.Cog.listener()
@@ -49,6 +55,6 @@ class ReactionRoles(commands.Cog):
                 member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
 
-
+                
 def setup(bot):
     bot.add_cog(ReactionRoles(bot))
