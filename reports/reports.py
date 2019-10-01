@@ -28,6 +28,7 @@ class Report(commands.Cog):
     @commands.command(aliases=["rmention"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def reportmention(self, ctx, *, mention: str):
+        """Sets the Report Mention"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_mention": mention}}, upsert=True
             )
