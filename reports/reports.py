@@ -20,10 +20,13 @@ class Report(commands.Cog):
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True
             )
-        await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {"report_mention": "New Report!"}}, upsert=True
-            )
-        await ctx.send("Successfully set the Reports channel!")
+        embed = discord.Embed(
+                color=discord.Color.blue())
+        embed.timestamp = datetime.datetime.utcnow()
+        embed.add_field(
+            name="Set Channel", value=f"Successfully Set the Report Channel to {channel.mention}",inline=False
+        )
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=["rmention"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
@@ -47,7 +50,10 @@ class Report(commands.Cog):
         """Report member's bad behavior"""
         config = await self.db.find_one({"_id": "config"})
         report_channel = config["report_channel"]
-        report_mention = config["report_mention"]
+        try:
+            report_mention = config["report_mention"]
+        except:
+            continue
         setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
 
         embed = discord.Embed(
