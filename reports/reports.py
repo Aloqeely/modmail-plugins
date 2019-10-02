@@ -53,7 +53,7 @@ class Report(commands.Cog):
         try:
             report_mention = config["report_mention"]
         except:
-            continue
+            pass
         setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
 
         embed = discord.Embed(
