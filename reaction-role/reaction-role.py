@@ -30,7 +30,7 @@ class ReactionRoles(commands.Cog):
             return await ctx.send('Reaction Role Canceled!')
         
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {NumberInt(emoji.id): role.id}}, upsert=True
+                {"_id": "config"}, {"$set": {str(emoji.id): role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"rr_channel": channel.id}}, upsert=True
