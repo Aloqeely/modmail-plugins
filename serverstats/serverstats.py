@@ -81,7 +81,7 @@ class ServerStats(commands.Cog):
             else:
                 continue
 
-        message = await self.create_channel(ctx, name, humans))
+        message = await self.create_channel(ctx, name, int(humans)))
         await ctx.send(message)
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": name}}, upsert=True)
@@ -100,7 +100,7 @@ class ServerStats(commands.Cog):
             else:
                 continue
 
-        message = await self.create_channel(ctx, name, bots))
+        message = await self.create_channel(ctx, name, int(bots)))
         await ctx.send(message)
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": name}}, upsert=True)
