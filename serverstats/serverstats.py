@@ -67,25 +67,81 @@ class ServerStats(commands.Cog):
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": name}}, upsert=True)
 
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def totalhuman(self, ctx, *, name: str=None):
+        """Sets up the Total Humans Voice Channel"""
+
+        if name is None:
+            name = "Total Humans"
+        humans = 0
+        for user in ctx.guild.members:
+            if not user.bot:
+                humans += 1
+            else:
+                continue
+
+        message = await self.create_channel(ctx, name, humans))
+        await ctx.send(message)
+
+        self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": name}}, upsert=True)
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def totalbot(self, ctx, *, name: str=None):
+        """Sets up the Total Bots Voice Channel"""
+        
+        if name is None:
+            name = "Total Bots"
+        bots = 0
+        for user in ctx.guild.members:
+            if user.bot:
+                bots += 1
+            else:
+                continue
+
+        message = await self.create_channel(ctx, name, bots))
+        await ctx.send(message)
+
+        self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": name}}, upsert=True)
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
         try:
             member_vc = voice_channels["mChannel"]
+            await self.update_channel(member, member_vc, member.guild.member_count)  
+        except:
+            pass
+        try:
+            human_vc = voice_channels["hChannel"]
+            await self.update_channel(member, human_vc, member.guild.member_count)  
+        except:
+            pass
+        try:
+            bot_vc = voice_channels["bChannel"]
+            await self.update_channel(member, bot_vc, member.guild.member_count)  
         except:
             return
-
-        await self.update_channel(member, member_vc, member.guild.member_count)  
-        
+   
     @commands.Cog.listener()   
     async def on_member_remove(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
         try:
             member_vc = voice_channels["mChannel"]
+            await self.update_channel(member, member_vc, member.guild.member_count)  
+        except:
+            pass
+        try:
+            human_vc = voice_channels["hChannel"]
+            await self.update_channel(member, human_vc, member.guild.member_count)  
+        except:
+            pass
+        try:
+            bot_vc = voice_channels["bChannel"]
+            await self.update_channel(member, bot_vc, member.guild.member_count)  
         except:
             return
-        
-        await self.update_channel(member, member_vc, member.guild.member_count)  
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
