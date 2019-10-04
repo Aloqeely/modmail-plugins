@@ -46,7 +46,7 @@ class ReactionRoles(commands.Cog):
         channel_id = config["rr_channel"]
         if payload.channel_id == int(channel_id):
             guild = discord.utils.get(self.bot.guilds, id=payload.guild_id)
-            rrole = config[payload.emoji.id]
+            rrole = config[str(payload.emoji.id)]
             role = discord.utils.get(guild.roles, id=int(rrole))
 
             if role is not None:
@@ -59,7 +59,7 @@ class ReactionRoles(commands.Cog):
         channel_id = config["rr_channel"]
         if payload.channel_id == int(channel_id):
             guild = discord.utils.get(self.bot.guilds, id=payload.guild_id)
-            rrole = config[payload.emoji.id]
+            rrole = config[str(payload.emoji.id)]
             role = discord.utils.get(guild.roles, id=int(rrole))
 
             if role is not None:
