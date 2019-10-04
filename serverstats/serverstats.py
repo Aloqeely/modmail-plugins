@@ -99,8 +99,8 @@ class ServerStats(commands.Cog):
             else:
                 continue
 
-        message = await self.create_channel(ctx, name, int(humans))
-        await ctx.send(message)
+        await self.create_channel(ctx, name, int(humans))
+
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": name}}, upsert=True)
 
