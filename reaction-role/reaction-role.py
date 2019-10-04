@@ -25,7 +25,7 @@ class ReactionRoles(commands.Cog):
         except asyncio.TimeoutError:
             return await ctx.send('Reaction Role Canceled!')
         
-         await self.db.find_one_and_update(
+        await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {NumberInt(emoji.id): role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
