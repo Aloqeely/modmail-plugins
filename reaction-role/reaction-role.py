@@ -21,8 +21,8 @@ class ReactionRoles(commands.Cog):
         """
         await ctx.send("Send the Message ID of the message that you want to hold the reaction role")
         
-        def check(id):
-            return msg.author == ctx.author and msg.channel == ctx.channel
+        def check(id: int):
+            return id.author == ctx.author and id.channel == ctx.channel
 
         try:
             id = await self.bot.wait_for('message', check=check, timeout=60)
