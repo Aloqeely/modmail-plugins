@@ -13,8 +13,8 @@ class ReactionRoles(commands.Cog):
 
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, channel_id, role: discord.Role, emoji: discord.Emoji):
-        """Sets Up the Reaction Role\nNote: the reaction role **ONLY** works in one channel, you **Cannot** use multiple Channels for it!"""
+    async def reactionrole(self, ctx, channel_id: int, role: discord.Role, emoji: discord.Emoji):
+        """Sets Up the Reaction Role, **Note**: the reaction role **ONLY** works for one channel!"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {emoji.name: role.id}}, upsert=True
             )
