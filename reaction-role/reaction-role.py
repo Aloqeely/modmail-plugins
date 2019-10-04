@@ -13,27 +13,25 @@ class ReactionRoles(commands.Cog):
 
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, message_id, role: discord.Role, emoji: discord.Emoji):
-        """Sets Up the Reaction Role"""
+    async def reactionrole(self, ctx, channel_id, role: discord.Role, emoji: discord.Emoji):
+        """Sets Up the Reaction Role
+        Note: the reaction role **ONLY** works in one channel, you **Cannot** use multiple Channels for it!"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {emoji.name: role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {"rr_msg": message_id}}, upsert=True
+                {"_id": "config"}, {"$set": {"rr_channel": channel_id}}, upsert=True
             )            
-        for channel in ctx.guild.text_channels:
-            try:
-                msg = await channel.fetch_message(message_id)
-            except:
-                continue
+        channel = discord.utils.get(ctx.guild.text_channels, id=int(channel_id))
+        msg = await channel.fetch_message(message_id)
         await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        msg_id = config["rr_msg"]
-        if payload.message_id == int(msg_id):
+        channel_id = config["rr_channel"]
+        if payload.channel_id == int(channel_id):
             guild = discord.utils.get(self.bot.guilds, id=payload.guild_id)
             rrole = config[payload.emoji.name]
             role = discord.utils.get(guild.roles, id=int(rrole))
@@ -45,8 +43,8 @@ class ReactionRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        msg_id = config["rr_msg"]
-        if payload.message_id == int(msg_id):
+        channel_id = config["rr_channel"]
+        if payload.channel_id == int(channel_id):
             guild = discord.utils.get(self.bot.guilds, id=payload.guild_id)
             rrole = config[payload.emoji.name]
             role = discord.utils.get(guild.roles, id=rrole)
