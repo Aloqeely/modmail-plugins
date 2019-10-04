@@ -50,11 +50,12 @@ class Report(commands.Cog):
         """Report member's bad behavior"""
         config = await self.db.find_one({"_id": "config"})
         report_channel = config["report_channel"]
+        setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
         try:
             report_mention = config["report_mention"]
+            await setchannel.send(report_mention)
         except:
             pass
-        setchannel = discord.utils.get(ctx.guild.channels, id=int(report_channel))
 
         embed = discord.Embed(
                     color=discord.Color.red())
@@ -69,7 +70,6 @@ class Report(commands.Cog):
         embed.add_field(
                 name="Reason", value=reason,inline=False)
 
-        await setchannel.send(report_mention)
         await setchannel.send(embed=embed)
         await ctx.send("Succesfully Reported the User!")
                         
