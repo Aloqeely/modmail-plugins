@@ -13,15 +13,14 @@ class ReactionRoles(commands.Cog):
 
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, channel_id: int, role: discord.Role, emoji: discord.Emoji):
+    async def reactionrole(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: discord.Emoji):
         """Sets Up the Reaction Role, **Note**: the reaction role **ONLY** works for one channel!"""
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {emoji.name: role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {"rr_channel": channel_id}}, upsert=True
+                {"_id": "config"}, {"$set": {"rr_channel": channel.id}}, upsert=True
             )            
-        channel = discord.utils.get(ctx.guild.text_channels, id=int(channel_id))
         msg = await channel.fetch_message(message_id)
         await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
