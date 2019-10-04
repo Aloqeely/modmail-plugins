@@ -54,8 +54,7 @@ class ServerStats(commands.Cog):
         if name is None:
             name = "Member Count"
 
-        message = await self.create_channel(ctx, name, ctx.guild.member_count)
-        await ctx.send(message)
+        await self.create_channel(ctx, name, ctx.guild.member_count)
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"mChannel": name}}, upsert=True)
 
@@ -67,8 +66,7 @@ class ServerStats(commands.Cog):
         if name is None:
             name = "Role Count"
 
-        message = await self.create_channel(ctx, name, len(ctx.guild.roles))
-        await ctx.send(message)
+        await self.create_channel(ctx, name, len(ctx.guild.roles))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"rChannel": name}}, upsert=True)
 
@@ -80,8 +78,7 @@ class ServerStats(commands.Cog):
         if name is None:
             name = "Channel Count"
 
-        message = await self.create_channel(ctx, name, len(ctx.guild.channels))
-        await ctx.send(message)
+        await self.create_channel(ctx, name, len(ctx.guild.channels))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": name}}, upsert=True)
 
@@ -101,7 +98,6 @@ class ServerStats(commands.Cog):
 
         await self.create_channel(ctx, name, int(humans))
 
-
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": name}}, upsert=True)
 
     @commands.command()
@@ -118,8 +114,7 @@ class ServerStats(commands.Cog):
             else:
                 continue
 
-        message = await self.create_channel(ctx, name, int(bots))
-        await ctx.send(message)
+        await self.create_channel(ctx, name, int(bots))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": name}}, upsert=True)
 
