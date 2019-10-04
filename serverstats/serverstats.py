@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord.ext import commands
 
@@ -38,6 +40,11 @@ class ServerStats(commands.Cog):
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": "Channel Count"}}, upsert=True)
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": "Total Humans"}}, upsert=True)
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": "Total Bots"}}, upsert=True)
+            
+            embed = discord.Embed(color = discord.Color.green())
+            embed.add_field(name="Success", value="Successfully Setup all the Server Info Voice Channels!")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
             
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -194,15 +201,23 @@ class ServerStats(commands.Cog):
         await self.update_channel(channel, channel_vc, len(channel.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
+        embed = discord.Embed()
+        embed.timestamp = datetime.datetime.utcnow()
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
             category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
             if category is None:
                 category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
 
             await ctx.guild.create_voice_channel(name=f"{name}: {count}", category=category)
-            return f"The {name.lower()} channel has been set up."
+            embed.add_field(name="Success", value= f"The {name} Channel has been set up.")
+            embed.color = discord.Color.green()
+            await ctx.send(embed=embed)
+            return
         
-        return f"The {name.lower()} channel has already been set up."
+        embed.add_field(name="Faliure", value= f"The {name} channel has already been set up.")
+        embed.color = discord.Color.red()
+        await ctx.send(embed=embed)
+        return 
     
     async def update_channel(self, ctx, name, count):
         category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
