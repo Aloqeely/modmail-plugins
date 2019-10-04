@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -14,7 +16,9 @@ class ReactionRoles(commands.Cog):
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def reactionrole(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: discord.Emoji):
-        """Sets Up the Reaction Role, **Note**: the reaction role **ONLY** works for one channel!"""
+        """Sets Up the Reaction Role
+        **Note**: the reaction role **ONLY** works for one channel, you **Cannot** set it for multiple channels!
+        """
         await ctx.send("Send the Message ID of the message that you want to hold the reaction role")
         
         def check(id):
