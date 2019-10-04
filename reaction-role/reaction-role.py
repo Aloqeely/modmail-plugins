@@ -25,7 +25,7 @@ class ReactionRoles(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.channel
 
         try:
-            id = await bot.wait_for('message', check=check, timeout=60)
+            id = await self.bot.wait_for('message', check=check, timeout=60)
         except asyncio.TimeoutError:
             return await ctx.send('Reaction Role Canceled!')
         
