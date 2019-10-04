@@ -19,14 +19,25 @@ class ServerStats(commands.Cog):
 
         if discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories) is None:
             category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
-
+            humans = 0
+            bots = 0
+            for user in ctx.guild.members:
+                if user.bot:
+                    bots += 1
+                else:
+                    humans += 1
+                    
             await self.create_channel(ctx, "Member Count", ctx.guild.member_count)
             await self.create_channel(ctx, "Role Count", len(ctx.guild.roles))
             await self.create_channel(ctx, "Channel Count", len(ctx.guild.channels))
+            await self.create_channel(ctx, "Total Humans", int(humans))
+            await self.create_channel(ctx, "Total Bots", int(bots))
 
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"mChannel": "Member Count"}}, upsert=True)
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"rChannel": "Role Count"}}, upsert=True)
             self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": "Channel Count"}}, upsert=True)
+            self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": "Total Humans"}}, upsert=True)
+            self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": "Total Bots"}}, upsert=True)
             
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
