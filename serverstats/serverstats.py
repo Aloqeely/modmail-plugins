@@ -121,6 +121,13 @@ class ServerStats(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
+        humans = 0
+        bots = 0
+        for user in member.guild.members:
+            if user.bot:
+                bots += 1
+            else:
+                humans += 1
         try:
             member_vc = voice_channels["mChannel"]
             await self.update_channel(member, member_vc, member.guild.member_count)  
@@ -128,18 +135,25 @@ class ServerStats(commands.Cog):
             pass
         try:
             human_vc = voice_channels["hChannel"]
-            await self.update_channel(member, human_vc, member.guild.member_count)  
+            await self.update_channel(member, human_vc, humans)  
         except:
             pass
         try:
             bot_vc = voice_channels["bChannel"]
-            await self.update_channel(member, bot_vc, member.guild.member_count)  
+            await self.update_channel(member, bot_vc, bots)  
         except:
             return
    
     @commands.Cog.listener()   
     async def on_member_remove(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
+        humans = 0
+        bots = 0
+        for user in ctx.guild.members:
+            if user.bot:
+                bots += 1
+            else:
+                humans += 1
         try:
             member_vc = voice_channels["mChannel"]
             await self.update_channel(member, member_vc, member.guild.member_count)  
@@ -147,12 +161,12 @@ class ServerStats(commands.Cog):
             pass
         try:
             human_vc = voice_channels["hChannel"]
-            await self.update_channel(member, human_vc, member.guild.member_count)  
+            await self.update_channel(member, human_vc, humans)  
         except:
             pass
         try:
             bot_vc = voice_channels["bChannel"]
-            await self.update_channel(member, bot_vc, member.guild.member_count)  
+            await self.update_channel(member, bot_vc, bots)  
         except:
             return
 
