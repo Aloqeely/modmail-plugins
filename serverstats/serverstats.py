@@ -149,7 +149,7 @@ class ServerStats(commands.Cog):
         voice_channels = await self.db.find_one({"_id": "config"})
         humans = 0
         bots = 0
-        for user in ctx.guild.members:
+        for user in member.guild.members:
             if user.bot:
                 bots += 1
             else:
