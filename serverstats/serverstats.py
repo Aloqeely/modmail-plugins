@@ -247,7 +247,7 @@ class ServerStats(commands.Cog):
             if f'{check}Channel' in setkeys:
                 num = checks.index(check)
                 value = matching[num] 
-                await self.update_channel(ctx,doc[f'{check}Channel]',value)
+                await self.update_channel(ctx,doc[f'{check}Channel'],value)
         await ctx.send('Fixed!')
         
 
