@@ -20,10 +20,16 @@ class ReactionRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
-
-    @commands.command(aliases=["rr"])
+    @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
+    async def reactionrole(self, ctx: commands.Context):
+        """Assign roles to your members with Reactions
+        """
+        await ctx.send_help(ctx.command)
+        
+    @reactionrole.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def add(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
         """Sets Up the Reaction Role
         **Note**: the reaction role **ONLY** works for one channel, you **Cannot** set it for multiple channels!
         """
@@ -47,6 +53,21 @@ class ReactionRoles(commands.Cog):
         msg = await channel.fetch_message(int(id.content))
         await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
+        
+    @reactionrole.command(aliases=["delete"])
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def remove(self, ctx, role: discord.Role, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
+        """remove something from the reaction-role
+        """
+        config = await self.db.find_one({"_id": "config"})
+        
+        if config is None:
+            return await ctx.send("successfully removed the role from the reaction-role")
+        
+        await self.db.delete_one({str(emoji.id): role.id})
+
+        await ctx.send("successfully removed the role from the reaction-role")
+
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
