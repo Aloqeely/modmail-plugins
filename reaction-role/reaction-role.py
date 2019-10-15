@@ -1,4 +1,6 @@
 import asyncio
+import emoji
+import typing
 
 import discord
 from discord.ext import commands
