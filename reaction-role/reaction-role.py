@@ -6,6 +6,12 @@ from discord.ext import commands
 from core import checks
 from core.models import PermissionLevel
 
+class UnicodeEmoji(commands.Converter):
+    async def convert(self, ctx, argument):
+        if argument in emoji.UNICODE_EMOJI:
+            return discord.PartialEmoji(name=argument, animated=False)
+        raise commands.BadArgument('Unknown emoji')
+
 class ReactionRoles(commands.Cog):
     """Assign roles to your members with Reactions"""
 
@@ -15,7 +21,7 @@ class ReactionRoles(commands.Cog):
 
     @commands.command(aliases=["rr"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: discord.Emoji):
+    async def reactionrole(self, ctx, channel: discord.TextChannel, role: discord.Role, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
         """Sets Up the Reaction Role
         **Note**: the reaction role **ONLY** works for one channel, you **Cannot** set it for multiple channels!
         """
@@ -29,8 +35,13 @@ class ReactionRoles(commands.Cog):
         except asyncio.TimeoutError:
             return await ctx.send('Reaction Role Canceled!')
         
+        try:
+            emote = emoji.id
+        except:
+            emote = emoji.name
+        
         await self.db.find_one_and_update(
-                {"_id": "config"}, {"$set": {str(emoji.id): role.id}}, upsert=True
+                {"_id": "config"}, {"$set": {str(emote): role.id}}, upsert=True
             )
         await self.db.find_one_and_update(
                 {"_id": "config"}, {"$set": {"rr_channel": channel.id}}, upsert=True
