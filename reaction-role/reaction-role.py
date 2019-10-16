@@ -33,7 +33,7 @@ class ReactionRoles(commands.Cog):
         """Sets Up the Reaction Role
         """
 
-        for channel in ctx.guild.TextChannels:
+        for channel in ctx.guild.channels:
             try:
                 msg = await channel.fetch_message(msg_id)
             except:
