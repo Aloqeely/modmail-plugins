@@ -69,7 +69,7 @@ class ReactionRoles(commands.Cog):
             role = discord.utils.get(guild.roles, id=int(rrole))
 
             if role is not None:
-                member = self.bot.get_user(payload.user_id)
+                member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.add_roles(role)
 
     @commands.Cog.listener()
@@ -86,7 +86,7 @@ class ReactionRoles(commands.Cog):
             role = discord.utils.get(guild.roles, id=int(rrole))
 
             if role is not None:
-                member = self.bot.get_user(payload.user_id)
+                member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
 
                 
