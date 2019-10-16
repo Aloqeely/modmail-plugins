@@ -50,7 +50,7 @@ class ReactionRoles(commands.Cog):
         """remove something from the reaction-role
         """
         
-        await self.db.find_one_and_update({"_id": "config"}, {"$unset": {str(emoji.id): ""})
+        await self.db.find_one_and_update({"_id": "config"}, {"$unset": {str(emoji.id): ""}})
 
         await ctx.send("Successfully removed the role from the reaction-role")
 
