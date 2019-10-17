@@ -64,7 +64,7 @@ class ReactionRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        if emoji.id is None:
+        if payload.emoji.id is None:
             emote = payload.emoji.name
         else:
             emote = str(payload.emoji.id)
@@ -85,7 +85,7 @@ class ReactionRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        if emoji.id is None:
+        if payload.emoji.id is None:
             emote = payload.emoji.name
         else:
             emote = str(payload.emoji.id)
