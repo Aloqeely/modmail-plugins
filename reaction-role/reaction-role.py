@@ -70,7 +70,7 @@ class ReactionRoles(commands.Cog):
             emote = str(payload.emoji.id)
         try:
             msg_id = config[emote]["msg_id"]
-        except KeyError:
+        except (KeyError, TypeError):
             return
                                                               
         if payload.message_id == int(msg_id):
@@ -91,7 +91,7 @@ class ReactionRoles(commands.Cog):
             emote = str(payload.emoji.id)
         try:
             msg_id = config[emote]["msg_id"]
-        except KeyError:
+        except (KeyError, TypeError):
             return
                                                               
         if payload.message_id == int(msg_id):
