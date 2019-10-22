@@ -20,28 +20,24 @@ class ReactionRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
+        
     @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def reactionrole(self, ctx: commands.Context):
-        """Assign roles to your members with Reactions
-        """
+        """Assign roles to your members with Reactions"""
         await ctx.send_help(ctx.command)
         
     @reactionrole.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def add(self, ctx, msg_id: int, role: discord.Role, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
-        """Sets Up the Reaction Role
-        """
+        """Sets Up the Reaction Role"""
 
         for channel in ctx.guild.channels:
             try:
                 msg = await channel.fetch_message(msg_id)
             except:
                 pass
-        if emoji.id is None:
-            emote = emoji.name
-        else:
-            emote = str(emoji.id)
+        emote = emoji.name if emoji.id is None else str(emoji.id)
         await self.db.find_one_and_update(
             {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": msg_id}}}, upsert=True)
         await msg.add_reaction(emoji)
@@ -50,12 +46,8 @@ class ReactionRoles(commands.Cog):
     @reactionrole.command(aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def remove(self, ctx, emoji: typing.Union[discord.PartialEmoji, UnicodeEmoji]):
-        """remove something from the reaction-role
-        """
-        if emoji.id is None:
-            emote = emoji.name
-        else:
-            emote = str(emoji.id)
+        """remove something from the reaction-role"""
+        emote = emoji.name if emoji.id is None else str(emoji.id)
             
         await self.db.find_one_and_update({"_id": "config"}, {"$unset": {str(emoji.id): ""}})
         await ctx.send("Successfully removed the role from the reaction-role")
@@ -64,10 +56,7 @@ class ReactionRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        if payload.emoji.id is None:
-            emote = payload.emoji.name
-        else:
-            emote = str(payload.emoji.id)
+        emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         try:
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
@@ -85,10 +74,7 @@ class ReactionRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         config = await self.db.find_one({"_id": "config"})
-        if payload.emoji.id is None:
-            emote = payload.emoji.name
-        else:
-            emote = str(payload.emoji.id)
+        emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         try:
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
