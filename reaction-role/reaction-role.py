@@ -25,7 +25,7 @@ class ReactionRoles(commands.Cog):
         
     @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx: commands.Context):
+    async def reactionrole(self, ctx):
         """Assign roles to your members with Reactions"""
         await ctx.send_help(ctx.command)
         
@@ -56,7 +56,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.group(name="blacklist", aliases=["ignore"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def blacklist(self, ctx: commands.Context):
+    async def blacklist(self, ctx):
         """ignore certain roles from reacting on a reaction-role"""
         await ctx.send_help(ctx.command)
         
