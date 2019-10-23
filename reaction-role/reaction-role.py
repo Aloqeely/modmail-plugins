@@ -13,6 +13,8 @@ class UnicodeEmoji(commands.Converter):
         if argument in emoji.UNICODE_EMOJI:
             return discord.PartialEmoji(name=argument, animated=False)
         raise commands.BadArgument('Unknown emoji')
+        
+Emoji = typing.Union[discord.PartialEmoji, UnicodeEmoji]
 
 class ReactionRoles(commands.Cog):
     """Assign roles to your members with Reactions"""
@@ -20,7 +22,6 @@ class ReactionRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.plugin_db.get_partition(self)
-        self.Emoji = typing.Union[discord.PartialEmoji, UnicodeEmoji]
         
     @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
@@ -30,7 +31,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, msg_id: int, role: discord.Role, emoji: self.Emoji, *, ignored_roles: commands.Greedy[discord.Role]):
+    async def add(self, ctx, msg_id: int, role: discord.Role, emoji: Emoji, *, ignored_roles: commands.Greedy[discord.Role] = None):
         """Sets Up the Reaction Role"""
 
         for channel in ctx.guild.channels:
@@ -46,7 +47,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: self.Emoji):
+    async def remove(self, ctx, emoji: Emoji):
         """remove something from the reaction-role"""
         emote = emoji.name if emoji.id is None else str(emoji.id)
             
@@ -61,7 +62,7 @@ class ReactionRoles(commands.Cog):
         
     @blacklist.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, emoji: self.Emoji, *, roles: commands.Greedy[discord.role]):
+    async def add(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.role]):
         """ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
@@ -79,7 +80,7 @@ class ReactionRoles(commands.Cog):
         
     @blacklist.command(aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: self.Emoji, *, roles: commands.Greedy[discord.role]):
+    async def remove(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.role]):
         """allow certain roles to react on a reaction-role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
