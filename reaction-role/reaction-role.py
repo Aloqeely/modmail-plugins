@@ -25,7 +25,7 @@ class ReactionRoles(commands.Cog):
         
     @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def reactionrole(self, ctx):
+    async def reactionrole(self, ctx: commands.Context):
         """Assign roles to your members with Reactions"""
         await ctx.send_help(ctx.command)
         
