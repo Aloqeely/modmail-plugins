@@ -31,7 +31,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, msg_id: int, role: discord.Role, emoji: Emoji, *, ignored_roles: commands.Greedy[discord.Role] = None):
+    async def add(self, ctx: Context, msg_id: int, role: discord.Role, emoji: Emoji, *, ignored_roles: commands.Greedy[discord.Role] = None):
         """Sets Up the Reaction Role"""
 
         for channel in ctx.guild.channels:
@@ -47,7 +47,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: Emoji):
+    async def remove(self, ctx: Context, emoji: Emoji):
         """remove something from the reaction-role"""
         emote = emoji.name if emoji.id is None else str(emoji.id)
             
