@@ -62,7 +62,7 @@ class ReactionRoles(commands.Cog):
         
     @blacklist.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.role]):
+    async def add(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
         """ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
@@ -80,7 +80,7 @@ class ReactionRoles(commands.Cog):
         
     @blacklist.command(aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.role]):
+    async def remove(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
         """allow certain roles to react on a reaction-role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
