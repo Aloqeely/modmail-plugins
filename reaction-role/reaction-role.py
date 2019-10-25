@@ -45,7 +45,7 @@ class ReactionRoles(commands.Cog):
         await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
         
-    @reactionrole.command(aliases=["delete"])
+    @reactionrole.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def remove(self, ctx, emoji: Emoji):
         """remove something from the reaction-role"""
@@ -54,7 +54,7 @@ class ReactionRoles(commands.Cog):
         await self.db.find_one_and_update({"_id": "config"}, {"$unset": {emote: ""}})
         await ctx.send("Successfully removed the role from the reaction-role")
         
-    @reactionrole.group(name="blacklist", aliases=["ignore"], invoke_without_command=True)
+    @reactionrole.group(name="blacklist", aliases=["ignorerole"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def blacklist(self, ctx):
         """ignore certain roles from reacting on a reaction-role"""
@@ -62,7 +62,7 @@ class ReactionRoles(commands.Cog):
         
     @blacklist.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def add(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
+    async def make(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
         """ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
@@ -78,9 +78,9 @@ class ReactionRoles(commands.Cog):
         embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
         await ctx.send(embed=embed)
         
-    @blacklist.command(aliases=["delete"])
+    @blacklist.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def remove(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
+    async def delete(self, ctx, emoji: Emoji, *, roles: commands.Greedy[discord.Role]):
         """allow certain roles to react on a reaction-role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
