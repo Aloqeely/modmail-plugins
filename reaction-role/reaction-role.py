@@ -67,7 +67,7 @@ class ReactionRoles(commands.Cog):
         """ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        blacklisted_roles = config[emoji]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"]
         
         new_blacklist = [role.id for role in roles if role.id not in blacklisted_roles]
         blacklist = blacklisted_roles + new_blacklist
@@ -85,7 +85,7 @@ class ReactionRoles(commands.Cog):
         """allow certain roles to react on a reaction-role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        blacklisted_roles = config[emoji]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"]
         blacklist = blacklisted_roles.copy()
         [blacklist.remove(role.id) for role in roles if role.id in blacklisted_roles]
         config[emote]["ignored_roles"] = blacklist
