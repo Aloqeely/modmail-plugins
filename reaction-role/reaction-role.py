@@ -110,7 +110,8 @@ class ReactionRoles(commands.Cog):
             ignored_roles = config[emote]["ignored_roles"]
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
-                if role in ctx.author.roles: return
+                if role in member.roles:
+                    return
         except:
             pass
         if payload.message_id == int(msg_id):
