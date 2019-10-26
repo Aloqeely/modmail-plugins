@@ -129,7 +129,7 @@ class ReactionRoles(commands.Cog):
                     reaction = discord.utils.get(msg.reactions, emoji=payload.emoji)
                     await reaction.remove(member)
                     return
-        except:
+        except (KeyError, TypeError):
             pass
         
         if payload.message_id == int(msg_id):
