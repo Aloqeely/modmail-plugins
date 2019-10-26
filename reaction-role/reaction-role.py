@@ -124,7 +124,7 @@ class ReactionRoles(commands.Cog):
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
                 if role in member.roles:
-                    ch = bot.get_channel(payload.channel_id)
+                    ch = self.bot.get_channel(payload.channel_id)
                     msg = await ch.fetch_message(payload.message_id)
                     reaction = discord.utils.get(msg.reactions, emoji=payload.emoji)
                     await reaction.remove(member)
