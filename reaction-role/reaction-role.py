@@ -80,8 +80,11 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Blacklist", description=f"Successfully added to the blacklist!", color=discord.Color.green())
-        embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        embed = discord.Embed(title="Successfully blacklisted the Roles", color=discord.Color.green())
+        try:
+            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        except HTTPException:
+            pass
         await ctx.send(embed=embed)
         
     @blacklist.command()
@@ -99,8 +102,11 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Blacklist", description=f"Successfully removed from the blacklist!", color=discord.Color.green())
-        embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        embed = discord.Embed(title="Succesfully removed the Roles", color=discord.Color.green())
+        try:
+            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        except HTTPException:
+            pass
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
@@ -118,6 +124,10 @@ class ReactionRoles(commands.Cog):
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
                 if role in member.roles:
+                    ch = await bot.get_channel(payload.channel_id)
+                    msg = await ch.fetch_message(payload.message_id)
+                    reaction = discord.utils.get(msg.reactions, emoji=payload.emoji)
+                    await reaction.remove(member)
                     return
         except:
             pass
