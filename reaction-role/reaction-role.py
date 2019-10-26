@@ -42,6 +42,8 @@ class ReactionRoles(commands.Cog):
         emote = emoji.name if emoji.id is None else str(emoji.id)
         if ignored_roles:
             blacklist = [role.id for role in ignored_roles]
+        else:
+            blacklist = None
         await self.db.find_one_and_update(
             {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": msg_id, "ignored_roles": blacklist}}}, upsert=True)
         await msg.add_reaction(emoji)
