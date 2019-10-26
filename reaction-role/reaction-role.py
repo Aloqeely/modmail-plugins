@@ -105,7 +105,7 @@ class ReactionRoles(commands.Cog):
         embed = discord.Embed(title="Succesfully removed the Roles", color=discord.Color.green())
         try:
             embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
-        except HTTPException:
+        except:
             pass
         await ctx.send(embed=embed)
 
