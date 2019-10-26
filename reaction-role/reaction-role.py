@@ -72,6 +72,8 @@ class ReactionRoles(commands.Cog):
         new_blacklist = [role.id for role in roles if role.id not in blacklisted_roles]
         blacklist = blacklisted_roles + new_blacklist
         config[emote]["ignored_roles"] = blacklist
+        await self.db.find_one_and_update(
+            {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
@@ -89,6 +91,8 @@ class ReactionRoles(commands.Cog):
         blacklist = blacklisted_roles.copy()
         [blacklist.remove(role.id) for role in roles if role.id in blacklisted_roles]
         config[emote]["ignored_roles"] = blacklist
+        await self.db.find_one_and_update(
+            {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
