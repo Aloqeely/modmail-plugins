@@ -130,7 +130,7 @@ class ReactionRoles(commands.Cog):
                 if role in member.roles:
                     ch = self.bot.get_channel(payload.channel_id)
                     msg = await ch.fetch_message(payload.message_id)
-                    reaction = discord.utils.get(msg.reactions, emoji.name=payload.emoji.name)
+                    reaction = discord.utils.find(lambda e: e.name == payload.emoji.name, msg.reactions)
                     await reaction.remove(member)
                     return
         except (KeyError, TypeError):
