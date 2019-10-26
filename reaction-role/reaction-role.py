@@ -80,8 +80,11 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Blacklist", description=f"Successfully added to the blacklist!", color=discord.Color.green())
-        embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        embed = discord.Embed(title="Successfully blacklisted the Roles", color=discord.Color.green())
+        try:
+            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        except HTTPException:
+            pass
         await ctx.send(embed=embed)
         
     @blacklist.command()
@@ -99,34 +102,46 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Blacklist", description=f"Successfully removed from the blacklist!", color=discord.Color.green())
-        embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        embed = discord.Embed(title="Succesfully removed the Roles", color=discord.Color.green())
+        try:
+            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+        except:
+            pass
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
+        emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
         try:
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
             return
+        
+        if payload.message_id != int(msg_id):
+            return
+        
         try:
             ignored_roles = config[emote]["ignored_roles"]
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
                 if role in member.roles:
+                    ch = self.bot.get_channel(payload.channel_id)
+                    msg = await ch.fetch_message(payload.message_id)
+                    reaction = discord.utils.get(msg.reactions, emoji=emoji)
+                    await reaction.remove(member)
                     return
-        except:
+        except (KeyError, TypeError):
             pass
-        if payload.message_id == int(msg_id):
-            rrole = config[emote]["role"]
-            role = discord.utils.get(guild.roles, id=int(rrole))
-            
-            if role is not None:
-                await member.add_roles(role)
+        
+        rrole = config[emote]["role"]
+        role = discord.utils.get(guild.roles, id=int(rrole))
+
+        if role is not None:
+            await member.add_roles(role)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
