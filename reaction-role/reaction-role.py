@@ -113,6 +113,7 @@ class ReactionRoles(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         config = await self.db.find_one({"_id": "config"})
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
+        emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
         try:
@@ -130,7 +131,7 @@ class ReactionRoles(commands.Cog):
                 if role in member.roles:
                     ch = self.bot.get_channel(payload.channel_id)
                     msg = await ch.fetch_message(payload.message_id)
-                    reaction = discord.utils.find(lambda e: e.name == payload.emoji.name, msg.reactions)
+                    reaction = discord.utils.get(msg.reactions, emoji=emoji)
                     await reaction.remove(member)
                     return
         except (KeyError, TypeError):
