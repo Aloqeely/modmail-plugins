@@ -119,6 +119,10 @@ class ReactionRoles(commands.Cog):
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
             return
+        
+        if payload.message_id != int(msg_id):
+            return
+        
         try:
             ignored_roles = config[emote]["ignored_roles"]
             for role_id in ignored_roles:
@@ -132,12 +136,11 @@ class ReactionRoles(commands.Cog):
         except (KeyError, TypeError):
             pass
         
-        if payload.message_id == int(msg_id):
-            rrole = config[emote]["role"]
-            role = discord.utils.get(guild.roles, id=int(rrole))
-            
-            if role is not None:
-                await member.add_roles(role)
+        rrole = config[emote]["role"]
+        role = discord.utils.get(guild.roles, id=int(rrole))
+
+        if role is not None:
+            await member.add_roles(role)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
