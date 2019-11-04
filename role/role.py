@@ -24,7 +24,7 @@ class Role(commands.Cog):
     async def unrole(self, ctx, member: discord.Member, role: discord.Role):
         """remove a role from a member."""
         await member.remove_roles(role)
-        await ctx.send("Successfully removed the role to the user!")
+        await ctx.send("Successfully removed the role from the user!")
 
     @commands.command(aliases=["makerole"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
