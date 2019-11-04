@@ -21,8 +21,8 @@ class ServerStats(commands.Cog):
 
         if discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories) is None:
             category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
-            humans = self.humans(ctx)
-            bots = self.bots(ctx)
+            humans = self.get_humans(ctx)
+            bots = self.get_bots(ctx)
             names = ["Member Count", "Role Count", "Channel Count", "Total Humans", "Total Bots"]
             counts = [ctx.guild.member_count, len(ctx.guild.roles), len(ctx.guild.channels), humans, bots]
             checks = ["m", "r", "c", "h", "b"]
@@ -78,7 +78,7 @@ class ServerStats(commands.Cog):
 
         if not name:
             name = "Total Humans"
-        humans = self.humans(ctx)
+        humans = self.get_humans(ctx)
 
         await self.create_channel(ctx, name, int(humans))
 
@@ -91,7 +91,7 @@ class ServerStats(commands.Cog):
         
         if not name:
             name = "Total Bots"
-        bots = self.bots(ctx)
+        bots = self.get_bots(ctx)
 
         await self.create_channel(ctx, name, int(bots))
 
@@ -102,8 +102,8 @@ class ServerStats(commands.Cog):
     async def fixvc(self, ctx):
         """Fix broken VC counts"""
         guild = ctx.guild
-        humans = self.humans(ctx)
-        bots = self.bots(ctx)
+        humans = self.get_humans(ctx)
+        bots = self.get_bots(ctx)
         doc = await self.db.find_one({'_id':'config'})
         setkeys = list(doc.keys())
         checks = ['m', 'r', 'c', 'h', 'b']
@@ -118,8 +118,8 @@ class ServerStats(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
-        humans = self.humans(member)
-        bots = self.bots(member)
+        humans = self.get_humans(member)
+        bots = self.get_bots(member)
         try:
             member_vc = voice_channels["mChannel"]
             await self.update_channel(member, member_vc, member.guild.member_count)  
@@ -139,8 +139,8 @@ class ServerStats(commands.Cog):
     @commands.Cog.listener()   
     async def on_member_remove(self, member):
         voice_channels = await self.db.find_one({"_id": "config"})
-        humans = self.humans(member)
-        bots = self.bots(member)
+        humans = self.get_humans(member)
+        bots = self.get_bots(member)
         try:
             member_vc = voice_channels["mChannel"]
             await self.update_channel(member, member_vc, member.guild.member_count)  
