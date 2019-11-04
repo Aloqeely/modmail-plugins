@@ -117,6 +117,24 @@ class ServerStats(commands.Cog):
         await self.create_channel(ctx, name, int(bots))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": name}}, upsert=True)
+        
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def fixvc(self, ctx):
+        """Fix broken VC counts"""
+        guild = ctx.guild
+        humans = self.humans(ctx)
+        bots = self.bots(ctx)
+        doc = await self.db.find_one({'_id':'config'})
+        setkeys = list(doc.keys())
+        checks = ['m','r','c','h','b']
+        matching = [guild.member_count, len(guild.roles), len(guild.channels), humans, bots]
+        for check in checks:
+            if f'{check}Channel' in setkeys:
+                num = checks.index(check)
+                value = matching[num] 
+                await self.update_channel(ctx, doc[f'{check}Channel'], value)
+        await ctx.send('Fixed all Counts!')
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -241,30 +259,14 @@ class ServerStats(commands.Cog):
             return
         
         await channel.edit(name=f"{name}: {count}")
-
-    @commands.command()
-    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def fixvc(self,ctx):
-        """Fix broken VC counts"""
-        guild = ctx.guild
-        humans = 0
-        bots = 0
-        for member in guild.members:
-            if member.bot:
-                bots +=1
-            else:
-                humans +=1
-        doc = await self.db.find_one({'_id':'config'})
-        setkeys = list(doc.keys())
-        checks = ['m','r','c','h','b']
-        matching = [guild.member_count,len(guild.roles),len(guild.channels),humans,bots]
-        for check in checks:
-            if f'{check}Channel' in setkeys:
-                num = checks.index(check)
-                value = matching[num] 
-                await self.update_channel(ctx,doc[f'{check}Channel'],value)
-        await ctx.send('Fixed all Counts!')
-
-
+        
+    def get_bots(self, ctx):
+        bots = [member for member in ctx.guild.members if member.bot]
+        return len(bots)
+    
+    def get_humans(self, ctx):
+        humans = [member for member in ctx.guild.members if not member.bot]
+        return len(humans)
+    
 def setup(bot):
     bot.add_cog(ServerStats(bot))
