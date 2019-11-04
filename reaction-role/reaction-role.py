@@ -111,6 +111,9 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        if not payload.guild_id:
+            return
+        
         config = await self.db.find_one({"_id": "config"})
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
@@ -140,11 +143,13 @@ class ReactionRoles(commands.Cog):
         rrole = config[emote]["role"]
         role = discord.utils.get(guild.roles, id=int(rrole))
 
-        if role is not None:
+        if role:
             await member.add_roles(role)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
+        if payload.guild_id is None:
+            return
         config = await self.db.find_one({"_id": "config"})
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         try:
@@ -157,7 +162,7 @@ class ReactionRoles(commands.Cog):
             rrole = config[emote]["role"]
             role = discord.utils.get(guild.roles, id=int(rrole))
 
-            if role is not None:
+            if role:
                 member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
                 
