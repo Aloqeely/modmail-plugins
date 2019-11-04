@@ -236,7 +236,6 @@ class ServerStats(commands.Cog):
     def get_humans(self, ctx):
         humans = [member for member in ctx.guild.members if not member.bot]
         return len(humans)
-
-
+    
 def setup(bot):
     bot.add_cog(ServerStats(bot))
