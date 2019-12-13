@@ -30,8 +30,8 @@ class ServerStats(commands.Cog):
                 await self.create_channel(ctx, name, count)
                 self.db.find_one_and_update({"_id": "config"}, {"$set": {f"{check}Channel": name}}, upsert=True)
             
-            embed = discord.Embed(color = discord.Color.green())
-            embed.add_field(name="Success", value="Successfully Setup all the Server Info Voice Channels!")
+            embed = discord.Embed(color=discord.Color.green())
+            embed.add_field(name= _("Success"), value= _("Successfully Setup all the Server Info Voice Channels!"))
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed=embed)
             
@@ -109,11 +109,11 @@ class ServerStats(commands.Cog):
         checks = ['m', 'r', 'c', 'h', 'b']
         matching = [guild.member_count, len(guild.roles), len(guild.channels), humans, bots]
         for check in checks:
-            if f'{check}Channel' in setkeys:
+            if f"{check}Channel" in setkeys:
                 num = checks.index(check)
                 value = matching[num] 
-                await self.update_channel(ctx,doc[f'{check}Channel'], value)
-        await ctx.send('Fixed all Counts!')
+                await self.update_channel(ctx, doc[f"{check}Channel"], value)
+        await ctx.send(_("Fixed all Counts!"))
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -197,23 +197,20 @@ class ServerStats(commands.Cog):
         await self.update_channel(channel, channel_vc, len(channel.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
-        embed = discord.Embed()
-        embed.timestamp = datetime.datetime.utcnow()
+        embed = discord.Embed(timestamp=datetime.datetime.utcnow())
         if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
             category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
             if category is None:
                 category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
 
             await ctx.guild.create_voice_channel(name=f"{name}: {count}", category=category)
-            embed.add_field(name="Success", value= f"The {name} Channel has been set up.")
+            embed.add_field(name= _("Success"), value= _("The {name} Channel has been set up.").format(name=name))
             embed.color = discord.Color.green()
-            await ctx.send(embed=embed)
-            return
+            return await ctx.send(embed=embed)
         
-        embed.add_field(name="Faliure", value= f"The {name} channel has already been set up.")
+        embed.add_field(name= _("Faliure"), value= _("The {name} channel has already been set up.").format(name=name))
         embed.color = discord.Color.red()
-        await ctx.send(embed=embed)
-        return 
+        return await ctx.send(embed=embed)
     
     async def update_channel(self, ctx, name, count):
         category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
