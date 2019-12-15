@@ -1,0 +1,36 @@
+"Identifier","English","Context"
+"Success","Success","File: plugins_translations/dazvise/serverstats\serverstats.py/L34/L116"
+"Successfully Setup all the Server Info Voice Channels!","Successfully Setup all the Server Info Voice Channels!","File: plugins_translations/dazvise/serverstats\serverstats.py/L34"
+"Fixed all Counts!","Fixed all Counts!","File: plugins_translations/dazvise/serverstats\serverstats.py/L116"
+"The {name} Channel has been set up.","The {name} Channel has been set up.","File: plugins_translations/dazvise/serverstats\serverstats.py/L207"
+"Faliure","Faliure","File: plugins_translations/dazvise/serverstats\serverstats.py/L211"
+"The {name} channel has already been set up.","The {name} channel has already been set up.","File: plugins_translations/dazvise/serverstats\serverstats.py/L211"
+"Interesting and accurate statistics about your server.","Interesting and accurate statistics about your server.","Cog: ServerStats"
+"Sets up all the server stats Voice Channels.","Sets up all the server stats Voice Channels.","Cog: ServerStats
+Command: vcsetup"
+"Sets up all the server stats Voice Channels.","Sets up all the server stats Voice Channels.","Cog: ServerStats
+Command: vcsetup"
+"Sets up the Member Count Voice Channel.","Sets up the Member Count Voice Channel.","Cog: ServerStats
+Command: membercount"
+"Sets up the Member Count Voice Channel.","Sets up the Member Count Voice Channel.","Cog: ServerStats
+Command: membercount"
+"Sets up the Role Count Voice Channel.","Sets up the Role Count Voice Channel.","Cog: ServerStats
+Command: rolecount"
+"Sets up the Role Count Voice Channel.","Sets up the Role Count Voice Channel.","Cog: ServerStats
+Command: rolecount"
+"Sets up the Channel Count Voice Channel","Sets up the Channel Count Voice Channel","Cog: ServerStats
+Command: channelcount"
+"Sets up the Channel Count Voice Channel","Sets up the Channel Count Voice Channel","Cog: ServerStats
+Command: channelcount"
+"Sets up the Total Humans Voice Channel","Sets up the Total Humans Voice Channel","Cog: ServerStats
+Command: totalhuman"
+"Sets up the Total Humans Voice Channel","Sets up the Total Humans Voice Channel","Cog: ServerStats
+Command: totalhuman"
+"Sets up the Total Bots Voice Channel","Sets up the Total Bots Voice Channel","Cog: ServerStats
+Command: totalbot"
+"Sets up the Total Bots Voice Channel","Sets up the Total Bots Voice Channel","Cog: ServerStats
+Command: totalbot"
+"Fix broken VC counts","Fix broken VC counts","Cog: ServerStats
+Command: fixvc"
+"Fix broken VC counts","Fix broken VC counts","Cog: ServerStats
+Command: fixvc"
