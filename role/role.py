@@ -16,6 +16,8 @@ class Role(commands.Cog):
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def role(self, ctx, member: discord.Member, role: discord.Role):
         """assign a role to a member."""
+        if role.position > ctx.author.roles[-1].position:
+            return await ctx.send("You do not have permissions to give this role")
         await member.add_roles(role)
         await ctx.send("Successfully added the role to the user!")
 
@@ -23,6 +25,8 @@ class Role(commands.Cog):
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def unrole(self, ctx, member: discord.Member, role: discord.Role):
         """remove a role from a member."""
+        if role.position > ctx.author.roles[-1].position:
+            return await ctx.send("You do not have permissions to remove this role")
         await member.remove_roles(role)
         await ctx.send("Successfully removed the role from the user!")
 
