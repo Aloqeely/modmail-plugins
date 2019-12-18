@@ -37,7 +37,7 @@ class Role(commands.Cog):
         valid = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color)
 
         if not valid:
-            embed = Embed(
+            embed = discord.Embed(
                 title="Failure",
                 description="Please enter a **valid** [hex code](https://htmlcolorcodes.com/color-picker)",
                 color=self.bot.main_color,
