@@ -67,7 +67,7 @@ class ReactionRoles(commands.Cog):
         await self.db.find_one_and_update({"_id": "config"}, {"$unset": {emote: ""}})
         await ctx.send("Successfully removed the role from the reaction-role")
         
-    @reactionrole.command(name="lock", aliases="pause", "stop")
+    @reactionrole.command(name="lock", aliases=["pause", "stop"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rr_lock(self, ctx, emoji: Emoji, state: str.lower):
         """
