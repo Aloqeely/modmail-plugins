@@ -189,7 +189,7 @@ class ServerStats(commands.Cog):
     
     async def create_channel(self, ctx, name, count): 
         embed = discord.Embed(timestamp = datetime.datetime.utcnow())
-        if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
+        if discord.utils.find(lambda c: c.name.startswith(name), ctx.guild.channels) is None:
             category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
             if category is None:
                 category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
@@ -206,7 +206,7 @@ class ServerStats(commands.Cog):
         return 
     
     async def update_channel(self, ctx, name, count):
-        channel = discord.utils.find(lambda c: c.name.startswith({name}), ctx.guild.channels)
+        channel = discord.utils.find(lambda c: c.name.startswith(name), ctx.guild.channels)
         if channel is None or not isinstance(channel, discord.VoiceChannel):
             return
         
