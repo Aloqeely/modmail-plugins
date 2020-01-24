@@ -206,15 +206,13 @@ class ServerStats(commands.Cog):
         return 
     
     async def update_channel(self, ctx, name, count):
-        category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
-        if category is None:
-            return
-
-        channel = discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels)
+        channel = discord.utils.find(lambda c: c.name.startswith({name}), ctx.guild.channels)
         if channel is None or not isinstance(channel, discord.VoiceChannel):
             return
+        
+        name = "".join([i for i in channel.name if not i.isdigit()])
     
-        await channel.edit(name=f"{name}: {count}")
+        await channel.edit(name=f"{name.strip()} {count}")
         
     def get_bots(self, ctx):
         bots = [member for member in ctx.guild.members if member.bot]
