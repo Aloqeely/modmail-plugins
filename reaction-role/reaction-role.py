@@ -246,6 +246,7 @@ class ReactionRoles(commands.Cog):
         emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
+        
         try:
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
@@ -266,9 +267,10 @@ class ReactionRoles(commands.Cog):
                     return
         except (KeyError, TypeError):
             pass
+        
         try:
             state = config[emote]["state"]
-            if state == "locked"
+            if state == "locked":
             return
         except (KeyError, TypeError):
             pass
@@ -283,13 +285,14 @@ class ReactionRoles(commands.Cog):
     async def on_raw_reaction_remove(self, payload):
         if payload.guild_id is None:
             return
+        
         config = await self.db.find_one({"_id": "config"})
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
+        
         try:
             msg_id = config[emote]["msg_id"]
         except (KeyError, TypeError):
             return
-        
                                                               
         if payload.message_id == int(msg_id):
             guild = self.bot.get_guild(payload.guild_id)
