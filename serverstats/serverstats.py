@@ -21,6 +21,7 @@ class ServerStats(commands.Cog):
 
         if discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories) is None:
             category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
+            await category.edit(position=0)
             humans = self.get_humans(ctx)
             bots = self.get_bots(ctx)
             names = ["Member Count", "Role Count", "Channel Count", "Total Humans", "Total Bots"]
@@ -37,12 +38,10 @@ class ServerStats(commands.Cog):
             
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def membercount(self, ctx, *, name: str = None):
+    async def membercount(self, ctx, *, name: str=None):
         """Sets up the Member Count Voice Channel."""
 
-        if not name:
-            name = "Member Count"
-
+        name = name or "Member Count"
         await self.create_channel(ctx, name, ctx.guild.member_count)
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"mChannel": name}}, upsert=True)
@@ -52,9 +51,7 @@ class ServerStats(commands.Cog):
     async def rolecount(self, ctx, *, name: str=None):
         """Sets up the Role Count Voice Channel.""" 
 
-        if not name:
-            name = "Role Count"
-
+        name = name or "Role Count"
         await self.create_channel(ctx, name, len(ctx.guild.roles))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"rChannel": name}}, upsert=True)
@@ -64,9 +61,7 @@ class ServerStats(commands.Cog):
     async def channelcount(self, ctx, *, name: str=None):
         """Sets up the Channel Count Voice Channel"""
 
-        if not name:
-            name = "Channel Count"
-
+        name = name or "Channel Count"
         await self.create_channel(ctx, name, len(ctx.guild.channels))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"cChannel": name}}, upsert=True)
@@ -76,10 +71,8 @@ class ServerStats(commands.Cog):
     async def totalhuman(self, ctx, *, name: str=None):
         """Sets up the Total Humans Voice Channel"""
 
-        if not name:
-            name = "Total Humans"
+        name = name or "Total Humans"
         humans = self.get_humans(ctx)
-
         await self.create_channel(ctx, name, int(humans))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"hChannel": name}}, upsert=True)
@@ -89,10 +82,8 @@ class ServerStats(commands.Cog):
     async def totalbot(self, ctx, *, name: str=None):
         """Sets up the Total Bots Voice Channel"""
         
-        if not name:
-            name = "Total Bots"
+        name = name or "Total Bots"
         bots = self.get_bots(ctx)
-
         await self.create_channel(ctx, name, int(bots))
 
         self.db.find_one_and_update({"_id": "config"}, {"$set": {"bChannel": name}}, upsert=True)
@@ -106,13 +97,13 @@ class ServerStats(commands.Cog):
         bots = self.get_bots(ctx)
         doc = await self.db.find_one({'_id':'config'})
         setkeys = list(doc.keys())
-        checks = ['m', 'r', 'c', 'h', 'b']
+        checks = ["m", "r", "c", "h", "b"]
         matching = [guild.member_count, len(guild.roles), len(guild.channels), humans, bots]
         for check in checks:
-            if f'{check}Channel' in setkeys:
+            if f"{check}Channel" in setkeys:
                 num = checks.index(check)
                 value = matching[num] 
-                await self.update_channel(ctx,doc[f'{check}Channel'], value)
+                await self.update_channel(ctx, doc[f'{check}Channel'], value)
         await ctx.send('Fixed all Counts!')
 
     @commands.Cog.listener()
@@ -197,37 +188,31 @@ class ServerStats(commands.Cog):
         await self.update_channel(channel, channel_vc, len(channel.guild.channels))
     
     async def create_channel(self, ctx, name, count): 
-        embed = discord.Embed()
-        embed.timestamp = datetime.datetime.utcnow()
-        if discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels) is None:
+        embed = discord.Embed(timestamp = datetime.datetime.utcnow())
+        if discord.utils.find(lambda c: c.name.startswith(name), ctx.guild.channels) is None:
             category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
             if category is None:
                 category = await ctx.guild.create_category(name=self.c_name, overwrites={ctx.guild.default_role: discord.PermissionOverwrite(connect=False)})
-
+                await category.edit(position=0)
             await ctx.guild.create_voice_channel(name=f"{name}: {count}", category=category)
             embed.add_field(name="Success", value= f"The {name} Channel has been set up.")
             embed.color = discord.Color.green()
             await ctx.send(embed=embed)
             return
         
-        embed.add_field(name="Faliure", value= f"The {name} channel has already been set up.")
+        embed.add_field(name="Failure", value= f"The {name} channel has already been set up.")
         embed.color = discord.Color.red()
         await ctx.send(embed=embed)
         return 
     
     async def update_channel(self, ctx, name, count):
-        category = discord.utils.find(lambda c: c.name == self.c_name, ctx.guild.categories)
-        if category is None:
-            return
-
-        channel = discord.utils.find(lambda c: c.name.startswith(f"{name}:"), ctx.guild.channels)
+        channel = discord.utils.find(lambda c: c.name.startswith(name), ctx.guild.channels)
         if channel is None or not isinstance(channel, discord.VoiceChannel):
             return
         
-        if channel.category != category:
-            return
+        name = "".join([i for i in channel.name if not i.isdigit()])
     
-        await channel.edit(name=f"{name}: {count}")
+        await channel.edit(name=f"{name.strip()} {count}")
         
     def get_bots(self, ctx):
         bots = [member for member in ctx.guild.members if member.bot]
