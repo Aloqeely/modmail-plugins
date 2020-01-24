@@ -271,7 +271,7 @@ class ReactionRoles(commands.Cog):
         try:
             state = config[emote]["state"]
             if state == "locked":
-            return
+                return
         except (KeyError, TypeError):
             pass
         
