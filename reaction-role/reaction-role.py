@@ -32,25 +32,22 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="add", aliases=["make"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_add(self, ctx, msg_id: int, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=None):
+    async def rr_add(self, ctx, msg_id: discord.Message, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=[]):
         """
         Sets up the reaction role.
         - Note(s):
         You can only use the emoji once, you can't use the emoji multiple times.
         """
-
-        for channel in ctx.guild.channels:
-            try:
-                msg = await channel.fetch_message(msg_id)
-            except:
-                pass
         emote = emoji.name if emoji.id is None else str(emoji.id)
+        
         if ignored_roles:
             blacklist = [role.id for role in ignored_roles]
         else:
             blacklist = None
+            
         await self.db.find_one_and_update(
             {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": msg_id, "ignored_roles": blacklist}}}, upsert=True)
+        
         await msg.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
         
@@ -202,7 +199,7 @@ class ReactionRoles(commands.Cog):
         if not valid:
             return await ctx.send(msg)
         
-        blacklisted_roles = config[emote]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"] or []
         
         new_blacklist = [role.id for role in roles if role.id not in blacklisted_roles]
         blacklist = blacklisted_roles + new_blacklist
@@ -229,8 +226,9 @@ class ReactionRoles(commands.Cog):
         if not valid:
             return await ctx.send(msg)
         
-        blacklisted_roles = config[emote]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"] or []
         blacklist = blacklisted_roles.copy()
+        
         [blacklist.remove(role.id) for role in roles if role.id in blacklisted_roles]
         config[emote]["ignored_roles"] = blacklist
         
