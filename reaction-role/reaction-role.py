@@ -34,7 +34,7 @@ class ReactionRoles(commands.Cog):
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rr_add(self, ctx, msg_id: int, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=None):
         """
-        Sets Up the Reaction Role
+        Sets up the reaction role.
         - Note(s):
         You can only use the emoji once, you can't use the emoji multiple times.
         """
@@ -57,7 +57,7 @@ class ReactionRoles(commands.Cog):
     @reactionrole.command(name="remove", aliases=["delete"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rr_remove(self, ctx, emoji: Emoji):
-        """delete something from the reaction-role"""
+        """Delete something from the reaction role."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
         valid = valid_emoji(emote, config)
@@ -65,13 +65,13 @@ class ReactionRoles(commands.Cog):
             return await ctx.send(valid)
             
         await self.db.find_one_and_update({"_id": "config"}, {"$unset": {emote: ""}})
-        await ctx.send("Successfully removed the role from the reaction-role")
+        await ctx.send("Successfully removed the role from the reaction role.")
         
     @reactionrole.command(name="lock", aliases=["pause", "stop"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def rr_lock(self, ctx, emoji: Emoji, state: str.lower):
         """
-        lock a reactionrole to temporary disable it
+        Lock a reaction role to disable it temporarily.
          - Example(s):
         `{prefix}rr lock 👀 lock`
         `{prefix}rr lock 👀 unlock`
@@ -92,7 +92,7 @@ class ReactionRoles(commands.Cog):
             config[emote]["state"] = "locked"
             reply = "Succesfully locked the reaction role."
         else:
-            return await ctx.send("invalid state! Valid states: `lock` and `unlock`.")
+            return await ctx.send("Invalid state! Valid states: `lock` and `unlock`.")
         
         await self.db.find_one_and_update(
         {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
@@ -102,7 +102,7 @@ class ReactionRoles(commands.Cog):
 #     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
 #     async def rr_make(self, ctx):
 #         """
-#         Make a reaction role interactively
+#         Make a reaction role through interactive setup
 #         Note: You can only use the emoji once, you can't use the emoji multiple times.
 #         """
 
@@ -180,13 +180,13 @@ class ReactionRoles(commands.Cog):
     @reactionrole.group(name="blacklist", aliases=["ignorerole"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def blacklist(self, ctx):
-        """ignore certain roles from reacting on a reaction-role"""
+        """Ignore certain roles from reacting on a reaction role."""
         await ctx.send_help(ctx.command)
         
     @blacklist.command(name="add")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def blacklist_add(self, ctx, emoji: Emoji, roles: commands.Greedy[discord.Role]):
-        """ignore certain roles from reacting."""
+        """Ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
         valid = valid_emoji(emote, config)
@@ -203,9 +203,9 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Successfully blacklisted the Roles", color=discord.Color.green())
+        embed = discord.Embed(title="Successfully blacklisted the roles.", color=discord.Color.green())
         try:
-            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+            embed.add_field(name=f"Current ignored roles for {emoji}", value=" ".join(ignored_roles))
         except HTTPException:
             pass
         await ctx.send(embed=embed)
@@ -213,7 +213,7 @@ class ReactionRoles(commands.Cog):
     @blacklist.command(name="remove")
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def blacklist_remove(self, ctx, emoji: Emoji, roles: commands.Greedy[discord.Role]):
-        """allow certain roles to react on a reaction-role they have been blacklisted from."""
+        """Allow certain roles to react on a reaction role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
         valid = valid_emoji(emote, config)
@@ -229,9 +229,9 @@ class ReactionRoles(commands.Cog):
         
         ignored_roles = [f"<@&{role}>" for role in blacklist]
         
-        embed = discord.Embed(title="Succesfully removed the Roles", color=discord.Color.green())
+        embed = discord.Embed(title="Succesfully removed the roles.", color=discord.Color.green())
         try:
-            embed.add_field(name=f"Current Ignored Roles for {emoji}", value=" ".join(ignored_roles))
+            embed.add_field(name=f"Current ignored roles for {emoji}", value=" ".join(ignored_roles))
         except:
             pass
         await ctx.send(embed=embed)
@@ -308,7 +308,7 @@ class ReactionRoles(commands.Cog):
             emoji = config[emoji]
             return "valid"
         except (KeyError, TypeError):
-            return "There's no reaction role set with this emoji"
+            return "There's no reaction role set with this emoji!"
                 
 def setup(bot):
     bot.add_cog(ReactionRoles(bot))
