@@ -267,15 +267,16 @@ class ReactionRoles(commands.Cog):
         if payload.message_id != int(msg_id):
             return
         
-        ignored_roles = config[emote].get("ignored_roles", [])
-        for role_id in ignored_roles:
-            role = discord.utils.get(guild.roles, id=role_id)
-            if role in member.roles:
-                await self._remove_reaction(payload, emoji)
-                return
+        ignored_roles = config[emote].get("ignored_roles")
+        if ignored_roles:
+            for role_id in ignored_roles:
+                role = discord.utils.get(guild.roles, id=role_id)
+                if role in member.roles:
+                    await self._remove_reaction(payload, emoji)
+                    return
         
         state = config[emote].get("state", "unlocked")
-        if state == "locked":
+        if state and state == "locked":
             await self._remove_reaction(payload, emoji)
             return
         
