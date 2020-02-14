@@ -60,9 +60,9 @@ class ReactionRoles(commands.Cog):
         """Delete something from the reaction role."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        valid = valid_emoji(emote, config)
-        if valid != "valid":
-            return await ctx.send(valid)
+        valid, msg = self.valid_emoji(emote, config)
+        if not valid:
+            return await ctx.send(msg)
             
         await self.db.find_one_and_update({"_id": "config"}, {"$unset": {emote: ""}})
         await ctx.send("Successfully removed the role from the reaction role.")
@@ -78,9 +78,9 @@ class ReactionRoles(commands.Cog):
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        valid = valid_emoji(emote, config)
-        if valid != "valid":
-            return await ctx.send(valid)
+        valid, msg = self.valid_emoji(emote, config)
+        if not valid:
+            return await ctx.send(msg)
         
         lock = ["yes", "y", "enable", "true", "lock"]
         unlock = ["no", "n", "disable", "false", "unlock"]
@@ -189,9 +189,9 @@ class ReactionRoles(commands.Cog):
         """Ignore certain roles from reacting."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        valid = valid_emoji(emote, config)
-        if valid != "valid":
-            return await ctx.send(valid)
+        valid, msg = self.valid_emoji(emote, config)
+        if not valid:
+            return await ctx.send(msg)
         
         blacklisted_roles = config[emote]["ignored_roles"]
         
@@ -216,9 +216,9 @@ class ReactionRoles(commands.Cog):
         """Allow certain roles to react on a reaction role they have been blacklisted from."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
-        valid = valid_emoji(emote, config)
-        if valid != "valid":
-            return await ctx.send(valid)
+        valid, msg = self.valid_emoji(emote, config)
+        if not valid:
+            return await ctx.send(msg)
         
         blacklisted_roles = config[emote]["ignored_roles"]
         blacklist = blacklisted_roles.copy()
@@ -306,9 +306,9 @@ class ReactionRoles(commands.Cog):
     def valid_emoji(self, emoji, config):
         try:
             emoji = config[emoji]
-            return "valid"
+            return True, None
         except (KeyError, TypeError):
-            return "There's no reaction role set with this emoji!"
+            return False, "There's no reaction role set with this emoji!"
                 
 def setup(bot):
     bot.add_cog(ReactionRoles(bot))
