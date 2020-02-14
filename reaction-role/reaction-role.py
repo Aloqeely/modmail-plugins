@@ -69,12 +69,11 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="lock", aliases=["pause", "stop"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_lock(self, ctx, emoji: Emoji, state: str.lower):
+    async def rr_lock(self, ctx, emoji: Emoji):
         """
         Lock a reaction role to disable it temporarily.
          - Example(s):
-        `{prefix}rr lock 👀 lock`
-        `{prefix}rr lock 👀 unlock`
+        `{prefix}rr lock 👀`
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
@@ -82,21 +81,31 @@ class ReactionRoles(commands.Cog):
         if not valid:
             return await ctx.send(msg)
         
-        lock = ["yes", "y", "enable", "true", "lock"]
-        unlock = ["no", "n", "disable", "false", "unlock"]
-        
-        if state in unlock:
-            config[emote]["state"] = "unlocked"
-            reply = "Succesfully unlocked the reaction role."
-        elif state in lock:
-            config[emote]["state"] = "locked"
-            reply = "Succesfully locked the reaction role."
-        else:
-            return await ctx.send("Invalid state! Valid states: `lock` and `unlock`.")
+        config[emote]["state"] = "locked"
         
         await self.db.find_one_and_update(
         {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
-        await ctx.send(reply)
+        await ctx.send("Succesfully locked the reaction role.")
+        
+    @reactionrole.command(name="unlock", aliases=["resume"])
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def rr_unlock(self, ctx, emoji: Emoji):
+        """
+        Unlock a disabled reaction role.
+         - Example(s):
+        `{prefix}rr unlock 👀`
+        """
+        emote = emoji.name if emoji.id is None else str(emoji.id)
+        config = await self.db.find_one({"_id": "config"})
+        valid, msg = self.valid_emoji(emote, config)
+        if not valid:
+            return await ctx.send(msg)
+
+        config[emote]["state"] = "unlocked"
+        
+        await self.db.find_one_and_update(
+        {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
+        await ctx.send("Succesfully unlocked the reaction role.")
             
 #     @reactionrole.command(name="make")
 #     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
