@@ -233,6 +233,7 @@ class ReactionRoles(commands.Cog):
         blacklist = blacklisted_roles.copy()
         [blacklist.remove(role.id) for role in roles if role.id in blacklisted_roles]
         config[emote]["ignored_roles"] = blacklist
+        
         await self.db.find_one_and_update(
             {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
         
@@ -251,8 +252,10 @@ class ReactionRoles(commands.Cog):
             return
         
         config = await self.db.find_one({"_id": "config"})
+        
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
+        
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
         
@@ -264,25 +267,17 @@ class ReactionRoles(commands.Cog):
         if payload.message_id != int(msg_id):
             return
         
-        try:
-            ignored_roles = config[emote]["ignored_roles"]
-            for role_id in ignored_roles:
-                role = discord.utils.get(guild.roles, id=role_id)
-                if role in member.roles:
-                    ch = self.bot.get_channel(payload.channel_id)
-                    msg = await ch.fetch_message(payload.message_id)
-                    reaction = discord.utils.get(msg.reactions, emoji=emoji)
-                    await reaction.remove(member)
-                    return
-        except (KeyError, TypeError):
-            pass
-        
-        try:
-            state = config[emote]["state"]
-            if state == "locked":
+        ignored_roles = config[emote].get("ignored_roles", [])
+        for role_id in ignored_roles:
+            role = discord.utils.get(guild.roles, id=role_id)
+            if role in member.roles:
+                await self._remove_reaction(payload, emoji)
                 return
-        except (KeyError, TypeError):
-            pass
+        
+        state = config[emote].get("state", "unlocked")
+        if state == "locked":
+            await self._remove_reaction(payload, emoji)
+            return
         
         rrole = config[emote]["role"]
         role = discord.utils.get(guild.roles, id=int(rrole))
@@ -311,6 +306,12 @@ class ReactionRoles(commands.Cog):
             if role:
                 member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
+                
+    async def _remove_reaction(self, payload, emoji):
+        channel = self.bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        reaction = discord.utils.get(msg.reactions, emoji=emoji)
+        await reaction.remove(member)
                                   
     def valid_emoji(self, emoji, config):
         try:
