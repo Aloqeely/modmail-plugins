@@ -270,12 +270,12 @@ class ReactionRoles(commands.Cog):
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
                 if role in member.roles:
-                    await self._remove_reaction(payload, emoji)
+                    await self._remove_reaction(payload, emoji, member)
                     return
         
         state = config[emote].get("state", "unlocked")
         if state and state == "locked":
-            await self._remove_reaction(payload, emoji)
+            await self._remove_reaction(payload, emoji, member)
             return
         
         rrole = config[emote]["role"]
@@ -306,7 +306,7 @@ class ReactionRoles(commands.Cog):
                 member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
                 
-    async def _remove_reaction(self, payload, emoji):
+    async def _remove_reaction(self, payload, emoji, member):
         channel = self.bot.get_channel(payload.channel_id)
         msg = await channel.fetch_message(payload.message_id)
         reaction = discord.utils.get(msg.reactions, emoji=emoji)
