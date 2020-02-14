@@ -32,7 +32,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="add", aliases=["make"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_add(self, ctx, msg_id: discord.Message, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=[]):
+    async def rr_add(self, ctx, message: discord.Message, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=[]):
         """
         Sets up the reaction role.
         - Note(s):
@@ -43,12 +43,12 @@ class ReactionRoles(commands.Cog):
         if ignored_roles:
             blacklist = [role.id for role in ignored_roles]
         else:
-            blacklist = None
+            blacklist = []
             
         await self.db.find_one_and_update(
-            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": msg_id, "ignored_roles": blacklist}}}, upsert=True)
+            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": message.id, "ignored_roles": blacklist, "state": "unlocked"}}}, upsert=True)
         
-        await msg.add_reaction(emoji)
+        await message.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
         
     @reactionrole.command(name="remove", aliases=["delete"])
@@ -57,6 +57,7 @@ class ReactionRoles(commands.Cog):
         """Delete something from the reaction role."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
@@ -74,6 +75,7 @@ class ReactionRoles(commands.Cog):
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
@@ -94,6 +96,7 @@ class ReactionRoles(commands.Cog):
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
