@@ -32,26 +32,23 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="add", aliases=["make"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_add(self, ctx, msg_id: int, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=None):
+    async def rr_add(self, ctx, message: discord.Message, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=[]):
         """
         Sets up the reaction role.
         - Note(s):
         You can only use the emoji once, you can't use the emoji multiple times.
         """
-
-        for channel in ctx.guild.channels:
-            try:
-                msg = await channel.fetch_message(msg_id)
-            except:
-                pass
         emote = emoji.name if emoji.id is None else str(emoji.id)
+        
         if ignored_roles:
             blacklist = [role.id for role in ignored_roles]
         else:
-            blacklist = None
+            blacklist = []
+            
         await self.db.find_one_and_update(
-            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": msg_id, "ignored_roles": blacklist}}}, upsert=True)
-        await msg.add_reaction(emoji)
+            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": message.id, "ignored_roles": blacklist, "state": "unlocked"}}}, upsert=True)
+        
+        await message.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
         
     @reactionrole.command(name="remove", aliases=["delete"])
@@ -60,6 +57,7 @@ class ReactionRoles(commands.Cog):
         """Delete something from the reaction role."""
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
@@ -77,6 +75,7 @@ class ReactionRoles(commands.Cog):
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
@@ -97,6 +96,7 @@ class ReactionRoles(commands.Cog):
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         config = await self.db.find_one({"_id": "config"})
+        
         valid, msg = self.valid_emoji(emote, config)
         if not valid:
             return await ctx.send(msg)
@@ -202,7 +202,7 @@ class ReactionRoles(commands.Cog):
         if not valid:
             return await ctx.send(msg)
         
-        blacklisted_roles = config[emote]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"] or []
         
         new_blacklist = [role.id for role in roles if role.id not in blacklisted_roles]
         blacklist = blacklisted_roles + new_blacklist
@@ -229,10 +229,12 @@ class ReactionRoles(commands.Cog):
         if not valid:
             return await ctx.send(msg)
         
-        blacklisted_roles = config[emote]["ignored_roles"]
+        blacklisted_roles = config[emote]["ignored_roles"] or []
         blacklist = blacklisted_roles.copy()
+        
         [blacklist.remove(role.id) for role in roles if role.id in blacklisted_roles]
         config[emote]["ignored_roles"] = blacklist
+        
         await self.db.find_one_and_update(
             {"_id": "config"}, {"$set": {emote: config[emote]}}, upsert=True)
         
@@ -251,8 +253,10 @@ class ReactionRoles(commands.Cog):
             return
         
         config = await self.db.find_one({"_id": "config"})
+        
         emote = payload.emoji.name if payload.emoji.id is None else str(payload.emoji.id)
         emoji = payload.emoji.name if payload.emoji.id is None else payload.emoji
+        
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
         
@@ -264,25 +268,18 @@ class ReactionRoles(commands.Cog):
         if payload.message_id != int(msg_id):
             return
         
-        try:
-            ignored_roles = config[emote]["ignored_roles"]
+        ignored_roles = config[emote].get("ignored_roles")
+        if ignored_roles:
             for role_id in ignored_roles:
                 role = discord.utils.get(guild.roles, id=role_id)
                 if role in member.roles:
-                    ch = self.bot.get_channel(payload.channel_id)
-                    msg = await ch.fetch_message(payload.message_id)
-                    reaction = discord.utils.get(msg.reactions, emoji=emoji)
-                    await reaction.remove(member)
+                    await self._remove_reaction(payload, emoji, member)
                     return
-        except (KeyError, TypeError):
-            pass
         
-        try:
-            state = config[emote]["state"]
-            if state == "locked":
-                return
-        except (KeyError, TypeError):
-            pass
+        state = config[emote].get("state", "unlocked")
+        if state and state == "locked":
+            await self._remove_reaction(payload, emoji, member)
+            return
         
         rrole = config[emote]["role"]
         role = discord.utils.get(guild.roles, id=int(rrole))
@@ -311,6 +308,12 @@ class ReactionRoles(commands.Cog):
             if role:
                 member = discord.utils.get(guild.members, id=payload.user_id)
                 await member.remove_roles(role)
+                
+    async def _remove_reaction(self, payload, emoji, member):
+        channel = self.bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        reaction = discord.utils.get(msg.reactions, emoji=emoji)
+        await reaction.remove(member)
                                   
     def valid_emoji(self, emoji, config):
         try:
