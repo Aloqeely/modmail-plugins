@@ -15,7 +15,7 @@ class UnicodeEmoji(commands.Converter):
             return discord.PartialEmoji(name=argument, animated=False)
         raise commands.BadArgument('Unknown emoji')
 
-Emoji = typing.Union[discord.PartialEmoji, UnicodeEmoji]
+Emoji = typing.Union[discord.PartialEmoji, discord.Emoji, UnicodeEmoji]
 
 class ReactionRoles(commands.Cog):
     """Assign roles to your members with Reactions"""

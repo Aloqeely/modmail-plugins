@@ -32,17 +32,17 @@ class Role(commands.Cog):
 
     @commands.command(aliases=["makerole"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def createrole(self, ctx, name, color: str=None):
+    async def createrole(self, ctx, name: str, color: str):
         """create a role."""
-        if color:
-            valid = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color)
-            if not valid:
-                embed = discord.Embed(title="Failure", color=self.bot.main_color,
-                    description="Please enter a **valid** [hex code](https://htmlcolorcodes.com/color-picker)")
+        color = "#" + color.strip("#")
+        
+        valid = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color)
+        if not valid:
+            embed = discord.Embed(title="Failure", color=self.bot.main_color,
+                description="Please enter a **valid [hex code](https://htmlcolorcodes.com/color-picker)**")
             return await ctx.send(embed=embed)
-            color = discord.Color(int(color.replace("#", "0x"), 0))
 
-        await ctx.guild.create_role(name=name, color=color)
+        await ctx.guild.create_role(name=name, color=discord.Color(int(color.replace("#", "0x"), 0)))
         await ctx.send("Successfully created the role!")
 
 def setup(bot):
