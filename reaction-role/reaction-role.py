@@ -32,7 +32,8 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="add", aliases=["make"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_add(self, ctx, message: discord.Message, role: discord.Role, emoji: Emoji, ignored_roles: commands.Greedy[discord.Role]=[]):
+    async def rr_add(self, ctx, message: discord.Message, role: discord.Role, emoji: Emoji,
+                     ignored_roles: commands.Greedy[discord.Role] = None):
         """
         Sets up the reaction role.
         - Note(s):
@@ -170,9 +171,13 @@ class ReactionRoles(commands.Cog):
 #                        f"the role, When you're done type `{ctx.prefix}done`\n**Example:** `🎉 Giveaways`")
 #         emojis = []
 #         roles = []
+
 #         while True:
 #             try:
 #                 emoji_and_role = await self.bot.wait_for("message", check=emoji_and_role_check, timeout=60.0)
+#             except asyncio.TimeoutError:
+#                 return await ctx.send("Too late! The reaction role is canceled.", delete_after=10.0)
+#             else:
 #                 if emoji_and_role.content.lower() == "done" or emoji_and_role.content.lower() == f"{ctx.prefix}done":
 #                     if len(roles) == 0:
 #                         await ctx.send("You need to at least specify 1 role for the reaction role")
@@ -181,9 +186,7 @@ class ReactionRoles(commands.Cog):
 #                 else:
 #                     emoji = emoji_and_role.content[0]
 #                     role = emoji_and_role.content[1:].strip()
-#                     if 
-#             except asyncio.TimeoutError:
-#                 return await ctx.send("Too late! The reaction role is canceled.", delete_after=10.0)
+#                     if ...
                   
 
     @reactionrole.group(name="blacklist", aliases=["ignorerole"], invoke_without_command=True)
@@ -259,6 +262,9 @@ class ReactionRoles(commands.Cog):
         
         guild = self.bot.get_guild(payload.guild_id)
         member = discord.utils.get(guild.members, id=payload.user_id)
+        
+        if member.bot:
+            return
         
         try:
             msg_id = config[emote]["msg_id"]
