@@ -3,7 +3,6 @@ import random
 import discord
 from discord.ext import commands
 
-
 class Megadoot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -24,13 +23,14 @@ class Megadoot(commands.Cog):
             'A wild {1} appears!\n{1} uses Bite! It\'s not very effective...\n{0} uses Mega Punch! It\'s very effective!\n{0} has won!',
             'As {0} ran all sweaty and tired reaching out for a last punch, {1} dashed to the side, leaving {0} tumbling onto the ground.',
             '{0} tried to modify the Dupe Bomber 3000 to take down {1} with tons of dupe reports, but Dannysaur got there first and denied them all... Which broke the machine.',
-            '{0} Mega Evolved and tried to wipe out {0} with Hyper Beam! But {1} used Mimic and reversed it back onto {0} instead!',
+            '{0} Mega Evolved and tried to wipe out {1} with Hyper Beam! But {1} used Mimic and reversed it back onto {0} instead!',
             '{0} threw a snowball at {1} but unfortunately it hits a window at Discord HQ. Oops',
             '{0} tricked {1} into waking up the Sleeping Pizza. The Sleeping Pizza does not like being woken up, so it turned both {0} and {1} into Calzone Pizza. Rest In Pepperoni.',
             '{0} went to tackle {1}, but they did a dank meme and lowkey dabbed out of the way',
             '{0} hit the Smash ball, but fell off the stage before they could use it on {1}',
             '{0} threw a pokeball at {1}, but it was only a Goldeen'
             ]
+        
         self.hugs = [
             '{0} gave {1} an awkward hug.',
             '{0} pretended to give {1} a hug, but put a "Kick Me" sign on them.',
@@ -59,13 +59,13 @@ class Megadoot(commands.Cog):
             
     @commands.command()
     async def fight(self, ctx, user: discord.Member):
-        """fight someone to show them how strong you are!"""
+        """Fight someone to show them how strong you are!"""
         await ctx.send(random.choice(self.fights).format(ctx.author.name, user.name, ctx.guild.owner.name))
 
 
     @commands.command()
     async def hug(self, ctx, user: discord.Member):
-        """hug someone to show them how much you love them!"""
+        """Hug someone to show them how much you love them!"""
         await ctx.send(random.choice(self.hugs).format(ctx.author.name, user.name))
 
         

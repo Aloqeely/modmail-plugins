@@ -7,7 +7,7 @@ from core import checks
 from core.models import PermissionLevel
 
 class Role(commands.Cog):
-    """easily create roles and add them to your members."""
+    """Easily create roles and add them to your members."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -15,20 +15,22 @@ class Role(commands.Cog):
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def role(self, ctx, member: discord.Member, role: discord.Role):
-        """assign a role to a member."""
+        """Assign a role to a member."""
         if role.position > ctx.author.roles[-1].position:
-            return await ctx.send("You do not have permissions to give this role")
+            return await ctx.send("You do not have permissions to give this role.")
+        
         await member.add_roles(role)
-        await ctx.send("Successfully added the role to the user!")
+        await ctx.send(f"Successfully added the role to {member.name}!")
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def unrole(self, ctx, member: discord.Member, role: discord.Role):
-        """remove a role from a member."""
+        """Remove a role from a member."""
         if role.position > ctx.author.roles[-1].position:
-            return await ctx.send("You do not have permissions to remove this role")
+            return await ctx.send("You do not have permissions to remove this role.")
+        
         await member.remove_roles(role)
-        await ctx.send("Successfully removed the role from the user!")
+        await ctx.send(f"Successfully removed the role from {member.name}!")
 
     @commands.command(aliases=["makerole"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
