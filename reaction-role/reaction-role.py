@@ -32,7 +32,7 @@ class ReactionRoles(commands.Cog):
         
     @reactionrole.command(name="add", aliases=["make"])
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def rr_add(self, ctx, message: discord.Message, role: discord.Role, emoji: Emoji,
+    async def rr_add(self, ctx, message: str, role: discord.Role, emoji: Emoji,
                      ignored_roles: commands.Greedy[discord.Role] = None):
         """
         Sets up the reaction role.
@@ -40,6 +40,19 @@ class ReactionRoles(commands.Cog):
         You can only use the emoji once, you can't use the emoji multiple times.
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
+        message_id = int(message.split("/")[-1])
+        
+        for channel in ctx.guild.text_channels:
+            try:
+                message = await channel.fetch_message(message_id)
+            except (discord.NotFound, discord.HTTPException, discord.Forbidden):
+                message = None
+                continue
+            else:
+                break
+                
+        if not message:
+            return await ctx.send("Message could not be found.")
         
         if ignored_roles:
             blacklist = [role.id for role in ignored_roles]
@@ -47,7 +60,8 @@ class ReactionRoles(commands.Cog):
             blacklist = []
             
         await self.db.find_one_and_update(
-            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": message.id, "ignored_roles": blacklist, "state": "unlocked"}}}, upsert=True)
+            {"_id": "config"}, {"$set": {emote: {"role": role.id, "msg_id": message.id, "ignored_roles": blacklist, "state": "unlocked"}}},
+            upsert=True)
         
         await message.add_reaction(emoji)
         await ctx.send("Successfuly set the Reaction Role!")
