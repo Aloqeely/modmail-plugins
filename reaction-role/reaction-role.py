@@ -38,6 +38,11 @@ class ReactionRoles(commands.Cog):
         Sets up the reaction role.
         - Note(s):
         You can only use the emoji once, you can't use the emoji multiple times.
+        - Usage:
+        Send message in any channel visible to the bot, copy MESSAGE_ID, and use command
+        {prefix}reactionrole add MESSAGE_ID "role name" :unique_emoji:
+        
+        [To copy MESSAGE_ID you need to enable Developer Mod in User Settings]
         """
         emote = emoji.name if emoji.id is None else str(emoji.id)
         message_id = int(message.split("/")[-1])
