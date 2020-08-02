@@ -1,4 +1,7 @@
 import re
+import typing
+
+from types import SimpleNamespace
 
 import discord
 from discord.ext import commands
@@ -14,8 +17,14 @@ class Role(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def role(self, ctx, member: discord.Member, role: discord.Role):
+    async def role(self, ctx, role: discord.Role, member: discord.Member=None):
         """Assign a role to a member."""
+        if member is None:
+            try:
+                member = ctx.guild.get_member(int(ctx.channel.topic[9:]))
+            except (ValueError, TypeError):
+                raise commands.MissingRequiredArguement(SimpleNamespace(name="role"))
+        
         if role.position > ctx.author.roles[-1].position:
             return await ctx.send("You do not have permissions to give this role.")
         
@@ -24,8 +33,14 @@ class Role(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def unrole(self, ctx, member: discord.Member, role: discord.Role):
+    async def unrole(self, ctx, role: discord.Role, member: discord.Member=None):
         """Remove a role from a member."""
+        if member is None:
+            try:
+                member = ctx.guild.get_member(int(ctx.channel.topic[9:]))
+            except (ValueError, TypeError):
+                raise commands.MissingRequiredArguement(SimpleNamespace(name="unrole"))
+            
         if role.position > ctx.author.roles[-1].position:
             return await ctx.send("You do not have permissions to remove this role.")
         
