@@ -22,7 +22,7 @@ class ReactionRoles(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.plugin_db.get_partition(self)
+        self.db = bot.api.get_plugin_partition(self)
         
     @commands.group(name="reactionrole", aliases=["rr"], invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
