@@ -12,7 +12,7 @@ class ServerStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.c_name = "📊 | Server Info"
-        self.db = bot.plugin_db.get_partition(self)
+        self.db = bot.api.get_plugin_partition(self)
         
     @commands.command() 
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
