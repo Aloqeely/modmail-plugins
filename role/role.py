@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from core import checks
 from core.models import PermissionLevel
+from core.utils import match_user_id
 
 class Role(commands.Cog):
     """Easily create roles and add them to your members."""
@@ -20,9 +21,8 @@ class Role(commands.Cog):
     async def role(self, ctx, role: discord.Role, member: discord.Member=None):
         """Assign a role to a member."""
         if member is None:
-            try:
-                member = ctx.guild.get_member(int(ctx.channel.topic[9:]))
-            except (ValueError, TypeError):
+            member = ctx.guild.get_member(match_user_id(ctx.channel.topic))
+            if member is None:
                 raise commands.MissingRequiredArgument(SimpleNamespace(name="role"))
         
         if role.position > ctx.author.roles[-1].position:
@@ -36,9 +36,8 @@ class Role(commands.Cog):
     async def unrole(self, ctx, role: discord.Role, member: discord.Member=None):
         """Remove a role from a member."""
         if member is None:
-            try:
-                member = ctx.guild.get_member(int(ctx.channel.topic[9:]))
-            except (ValueError, TypeError):
+            member = ctx.guild.get_member(match_user_id(ctx.channel.topic))
+            if member is None:
                 raise commands.MissingRequiredArgument(SimpleNamespace(name="unrole"))
             
         if role.position > ctx.author.roles[-1].position:
