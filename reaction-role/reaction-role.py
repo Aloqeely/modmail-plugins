@@ -11,7 +11,7 @@ from core.models import PermissionLevel
 
 class UnicodeEmoji(commands.Converter):
     async def convert(self, ctx, argument):
-        if argument in emoji.UNICODE_EMOJI:
+        if argument in emoji.UNICODE_EMOJI["en"]:
             return discord.PartialEmoji(name=argument, animated=False)
         raise commands.BadArgument('Unknown emoji')
 
